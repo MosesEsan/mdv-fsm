@@ -2,7 +2,7 @@
   {
     "name": "shared-dev",
     "env": "dev",
-    "projectRef": "<SUPABASE_DEV_PROJECT_REF>",
+    "projectRef": "pokflcodhocxkwcjriit",
     "kind": "shared",
     "envFile": "deploy/env/shared-dev.env"
   },
