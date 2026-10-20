@@ -12,6 +12,16 @@ let loaded = false;
 let running = false;
 const listeners = new Set<() => void>();
 const doneListeners = new Set<(item: QueuedUpload) => void>();
+const uploadHooks = new Map<string, (item: QueuedUpload) => Promise<void>>();
+
+/**
+ * Runs after a file of this kind is recorded, inside the same retry (so a failed link is tried
+ * again). Modules use it to link the file to their own record without core knowing about them.
+ * The hook must be safe to run twice.
+ */
+export function registerUploadHook(kind: string, hook: (item: QueuedUpload) => Promise<void>): void {
+  uploadHooks.set(kind, hook);
+}
 
 async function load() {
   if (loaded) return;
@@ -49,8 +59,11 @@ async function uploadOne(item: QueuedUpload) {
   const { error } = await getSupabase().from('job_files').insert({
     id: item.id, tenant_id: item.tenantId, job_id: item.jobId, kind: item.kind, path, thumb_path: thumbPath,
     content_type: 'image/jpeg', size_bytes: size, width: item.width, height: item.height, caption: item.caption ?? null,
+    ...(item.stage ? { stage: item.stage } : {}), ...(item.updateId ? { update_id: item.updateId } : {}),
   });
   if (error && !/duplicate key/i.test(error.message)) throw new Error(error.message);
+  const hook = uploadHooks.get(item.kind);
+  if (hook) await hook(item);
 }
 
 /** Uploads everything that is due. Safe to call often. */

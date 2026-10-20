@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     authError,
     signIn: async (email, password) => {
       const { error } = await getSupabase().auth.signInWithPassword({ email, password });
-      if (error) throw new Error('Email or password is incorrect.');
+      if (error) throw new Error('That email and password don’t match. Check them and try again.');
     },
     setPassword: async (password) => {
       const { error } = await getSupabase().auth.updateUser({ password });

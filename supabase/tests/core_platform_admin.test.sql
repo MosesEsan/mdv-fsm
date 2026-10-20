@@ -4,7 +4,7 @@ begin;
 select plan(30);
 
 insert into auth.users (id, email) values
-  ('ad000000-0000-0000-0000-000000000001', 'admin@platform.test'),
+  ('ad000000-0000-0000-0000-000000000001', 'admin-fixture@pa.test'),
   ('a1000000-0000-0000-0000-000000000001', 'owner-a@pa.test'),
   ('a1000000-0000-0000-0000-000000000002', 'worker-a@pa.test'),
   ('b1000000-0000-0000-0000-000000000001', 'owner-b@pa.test'),

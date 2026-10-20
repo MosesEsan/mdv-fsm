@@ -14,3 +14,26 @@ export function registerJobSection(section: JobSection): void {
 export function jobSectionsFor(isFeatureEnabled: (feature: string) => boolean): JobSection[] {
   return [...sections.values()].filter((s) => isFeatureEnabled(s.feature)).sort((a, b) => (a.order ?? 100) - (b.order ?? 100));
 }
+
+// Jobs list add-ons. A module can put a note above the jobs list (e.g. "2 extra work entries to
+// add to invoices") and a tag on each job row, without core knowing about it.
+export type JobRowTag = { label: string; tone: 'danger' | 'warning' | 'success' | 'neutral' };
+export type JobListAddon = {
+  id: string;
+  feature: string;
+  /** Shown above the list. */
+  Banner?: ComponentType;
+  /** Hook returning tags per job id. Called on every render of the list, so keep it a cached query. */
+  useRowTags?: () => Record<string, JobRowTag[]>;
+};
+
+const listAddons = new Map<string, JobListAddon>();
+
+export function registerJobListAddon(addon: JobListAddon): void {
+  if (!listAddons.has(addon.id)) listAddons.set(addon.id, addon);
+}
+
+/** All registered add-ons, in a fixed order (hooks inside them are called in this order every render). */
+export function jobListAddons(): JobListAddon[] {
+  return [...listAddons.values()];
+}

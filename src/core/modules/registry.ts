@@ -14,6 +14,10 @@ export type NavItem = {
   roles: 'all' | readonly AppRole[];
   /** Lower comes first. */
   order?: number;
+  /** Ionicons name for the Home tile, e.g. 'calendar-outline'. */
+  icon?: string;
+  /** Hook giving a number to show on the tile when something needs the person (e.g. new enquiries). Keep it a cached query. */
+  useCount?: () => number | undefined;
 };
 
 export type ModuleDefinition = {

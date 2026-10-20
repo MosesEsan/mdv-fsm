@@ -1,7 +1,16 @@
 // Pure rules for the photo upload queue (unit-tested).
+export const PHOTO_STAGES = ['before', 'progress', 'completion'] as const;
+export type PhotoStage = (typeof PHOTO_STAGES)[number];
+
 export type QueuedUpload = {
   id: string; tenantId: string; jobId: string; kind: string;
   localUri: string; thumbUri: string; width: number; height: number; caption?: string;
+  /** Photo stage on job records: 'before' | 'progress' | 'completion'. */
+  stage?: PhotoStage;
+  /** The job update this photo belongs to (posted before the photo is queued). */
+  updateId?: string;
+  /** Extra details for an upload hook (e.g. a module linking the file to its own record). */
+  meta?: Record<string, string>;
   attempts: number; nextTryAt: number; lastError?: string; createdAt: number;
 };
 
