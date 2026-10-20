@@ -2,7 +2,7 @@
 
 This is the single ordered list of steps that require your accounts, payment, secrets or dashboard approval.
 
-- [ ] Decide `<ADMIN_DOMAIN>`, email provider, privacy-policy owner, deletion approach, and which Apple/Google organisation owns the shared app. The shared app identifier is `ie.mesandigital.fsm` on both iOS and Android.
+- [ ] Decide the email provider, privacy-policy owner, deletion approach, and which Apple/Google organisation owns the shared app. The shared app identifier is `ie.mesandigital.fsm`; the admin URL is `https://mesandigitalventures.com/fsm/admin`.
 - [ ] Create a private GitHub repo: run `gh repo create <GITHUB_ORG>/<REPO_NAME> --private --source . --push` from the repo root.
 - [ ] Supabase Dashboard → New project: `shared-dev` is registered as `pokflcodhocxkwcjriit`; create `shared-prod` in Europe West (Ireland) and paste its ref into `deploy/projects.json`. Production paid plan is recommended for daily backups/no pausing (cost).
 - [ ] Copy `deploy/env/.env.example` to `deploy/env/shared-dev.env` and `shared-prod.env`; fill values locally. Do not commit them.
@@ -11,8 +11,8 @@ This is the single ordered list of steps that require your accounts, payment, se
 - [ ] Link and deploy dev: inspect `npm run deploy:supabase -- --env dev --dry-run`, then run without `--dry-run`. Do not deploy production yet.
 - [ ] Supabase dev → Authentication → Hooks: enable `public.custom_access_token_hook`. Authentication → URL Configuration: set dev admin Site URL and `/set-password` plus `field-service://set-password`. Providers → Email: disable signups. SMTP Settings: paste chosen provider SMTP credentials. Set reviewed JWT expiry.
 - [ ] Create the first dev platform admin: export dev URL/service-role key locally and run `npm run admin:create -- --email=<YOUR_EMAIL>`.
-- [ ] Vercel → Add New → Project → import the GitHub repo. Framework: Other; build/output come from `vercel.json`. Add Preview dev and Production prod values for `CLIENT`, `EAS_PROJECT_ID`, public Supabase URL and anon key.
-- [ ] Vercel → Project → Settings → Domains: add `<ADMIN_DOMAIN>`. Paste `https://<ADMIN_DOMAIN>` and `/set-password` into both hosted Supabase redirect allow-lists as appropriate.
+- [ ] Vercel: deploy the GitHub repo as `mdv-fsm-admin`, then route the existing `mesan-digital-ventures` project’s `/fsm/*` path to it. Framework: Other; build/output come from `vercel.json`. Add Preview dev and Production prod values for `CLIENT`, `EAS_PROJECT_ID`, public Supabase URL, anon key and `EXPO_PUBLIC_WEB_BASE_URL=/fsm`.
+- [ ] Supabase Auth redirect allow-list: add `https://mesandigitalventures.com/fsm/set-password` and set the Site URL to `https://mesandigitalventures.com/fsm`.
 - [ ] Supabase production → Authentication: repeat the hook, URL, invite-only, SMTP and JWT settings. Review the production target, then manually dispatch the `Deploy Supabase` workflow and approve its `production` environment gate.
 - [ ] Create production platform admin with `npm run admin:create`; do not run either local seed script against production.
 - [ ] Expo/EAS: create the shared EAS project, replace `<EAS_PROJECT_ID_SHARED>`, and set `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, and `EAS_PROJECT_ID` in development/preview/production environments. Add `EXPO_TOKEN` to GitHub.

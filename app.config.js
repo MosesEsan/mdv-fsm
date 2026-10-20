@@ -8,16 +8,21 @@ if (!client) throw new Error('CLIENT is required. Use CLIENT=shared locally or s
 const configPath = path.join(__dirname, 'clients', client, 'config.ts');
 if (!fs.existsSync(configPath)) throw new Error(`Unknown CLIENT "${client}". Add clients/${client}/config.ts first.`);
 const { config } = require(configPath);
+const hasEasProject = Boolean(config.easProjectId && !config.easProjectId.startsWith('<'));
 
 module.exports = ({ config: base }) => ({
   ...base,
   name: config.appName,
   slug: config.slug,
   scheme: config.scheme,
+  experiments: {
+    ...base.experiments,
+    ...(process.env.EXPO_PUBLIC_WEB_BASE_URL ? { baseUrl: process.env.EXPO_PUBLIC_WEB_BASE_URL } : {}),
+  },
   ...(config.icon ? { icon: config.icon } : {}),
   ...(config.splashImage ? { splash: { image: config.splashImage, resizeMode: 'contain' } } : {}),
   runtimeVersion: { policy: 'appVersion' },
-  updates: { url: `https://u.expo.dev/${config.easProjectId}` },
+  ...(hasEasProject ? { updates: { url: `https://u.expo.dev/${config.easProjectId}` } } : {}),
   ios: {
     ...base.ios,
     bundleIdentifier: config.iosBundleId,
@@ -34,6 +39,6 @@ module.exports = ({ config: base }) => ({
     supabaseUrl: config.supabaseUrl,
     supabaseAnonKey: config.supabaseAnonKey,
     lockedTenantId: config.lockedTenantId,
-    eas: { projectId: config.easProjectId },
+    ...(hasEasProject ? { eas: { projectId: config.easProjectId } } : {}),
   },
 });

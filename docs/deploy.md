@@ -35,7 +35,7 @@ Never paste values into Git. GitHub Actions secrets:
 
 GitHub Actions variables:
 
-- `SUPABASE_SHARED_DEV_INVITE_REDIRECT_URL`
+- `SUPABASE_SHARED_DEV_INVITE_REDIRECT_URL` (`https://mesandigitalventures.com/fsm/set-password`)
 - `SUPABASE_SHARED_PROD_INVITE_REDIRECT_URL`
 
 Local target files (gitignored) use the names in `deploy/env/.env.example`. Supabase Edge Functions also receive the platform-provided `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY`; custom code currently reads `INVITE_REDIRECT_URL`. Both candidate provider key names are reserved for the future mail integration.
@@ -80,7 +80,7 @@ For production review data, create a separate, optional review seeder only after
 These are project configuration, not schema. In Supabase Dashboard → Authentication:
 
 - Hooks: enable the custom access-token hook `public.custom_access_token_hook`, matching local `config.toml`.
-- URL Configuration: set Site URL to `https://<ADMIN_DOMAIN>`; add `https://<ADMIN_DOMAIN>/set-password` and `field-service://set-password`. Add a white-label scheme only for an approved app.
+- URL Configuration: set Site URL to `https://mesandigitalventures.com/fsm`; add `https://mesandigitalventures.com/fsm/set-password` and `field-service://set-password`. Add a white-label scheme only for an approved app.
 - Providers → Email: disable new email signups (invite only); preserve the present email-confirmation behaviour.
 - SMTP: configure the chosen Resend or Postmark SMTP credentials so invites do not depend on the built-in rate limit.
 - Sessions/JWT: use a reviewed JWT expiry (initial recommendation: 3600 seconds). Role changes reach an already signed-in user at their next token refresh.
@@ -91,9 +91,9 @@ These are project configuration, not schema. In Supabase Dashboard → Authentic
 
 ## Web admin on Vercel
 
-`npm run build:web` exports the Expo Router single-page app to `dist`. `vercel.json` rewrites deep links to `index.html`, disables caching for the shell and sets CSP, anti-framing, referrer, HSTS and MIME-sniffing headers. The root router gates `/admin` on the signed `platform_admin` claim, and `app/admin/_layout.tsx` prevents a phone-native admin UI. `/set-password` uses Supabase’s URL session handling and must be allow-listed as described above.
+`npm run build:web:fsm` exports the Expo Router single-page app beneath `/fsm` in `dist/fsm`. `vercel.json` rewrites deep links to `/fsm/index.html`, disables caching for the shell and sets CSP, anti-framing, referrer, HSTS and MIME-sniffing headers. The root router gates `/fsm/admin` on the signed `platform_admin` claim, and `app/admin/_layout.tsx` prevents a phone-native admin UI. `/fsm/set-password` uses Supabase’s URL session handling and must be allow-listed as described above.
 
-Connect the private GitHub repo in Vercel, set environment variables, deploy Preview first, then attach `<ADMIN_DOMAIN>` and promote Production. If the final Supabase hostname is known, narrow the CSP wildcard to those exact dev/prod origins.
+Deploy the FSM as its own Vercel project and route `mesandigitalventures.com/fsm/*` to it from the existing `mesan-digital-ventures` project. Set environment variables, deploy Preview first, then publish the path route. If the final production Supabase hostname is known, narrow the CSP wildcard to those exact dev/prod origins.
 
 ## EAS builds, credentials and updates
 
