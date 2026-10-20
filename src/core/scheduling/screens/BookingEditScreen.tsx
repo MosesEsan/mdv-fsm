@@ -6,12 +6,12 @@ import { useJobOptions, usePeople, useScheduleContext, useScheduleMutations } fr
 import { timeLabel } from '../rules';
 import { useBookingForm } from '../useBookingForm';
 
-type Props = { bookingId: string; date: string; onDone: () => void };
+type Props = { bookingId: string; date: string; jobId?: string; onDone: () => void };
 
 /** Add or change a booking: job, day, times, who's going. Warns about clashes before saving. */
-export function BookingEditScreen({ bookingId, date, onDone }: Props) {
+export function BookingEditScreen({ bookingId, date, jobId, onDone }: Props) {
   const { tz, canEdit } = useScheduleContext();
-  const f = useBookingForm(bookingId, date, onDone);
+  const f = useBookingForm(bookingId, date, onDone, jobId);
   const people = usePeople();
   const jobs = useJobOptions(canEdit);
   const { createJob } = useScheduleMutations();

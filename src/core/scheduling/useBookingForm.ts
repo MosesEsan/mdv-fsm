@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
+import { today } from '@/core/dates';
 import { useBookings, useScheduleContext, useScheduleMutations } from './hooks';
 import { bookingToForm, clashesFor, formProblems, formToRange, type BookingForm } from './rules';
 
-/** State and rules for adding or changing one booking. `bookingId` 'new' starts a blank form on `date`. */
-export function useBookingForm(bookingId: string, date: string, onSaved: () => void) {
+/** State and rules for adding or changing one booking. `bookingId` 'new' starts a blank form on `date`
+ * (today if empty), optionally with a job already picked (e.g. from an enquiry). */
+export function useBookingForm(bookingId: string, date: string, onSaved: () => void, presetJobId?: string) {
   const { tz } = useScheduleContext();
   const isNew = bookingId === 'new';
-  const [form, setForm] = useState<BookingForm>({ date, start: '08:30', end: '16:30', userIds: [], jobId: null });
+  const [form, setForm] = useState<BookingForm>({ date: date || today(tz), start: '08:30', end: '16:30', userIds: [], jobId: presetJobId ?? null });
   const [notes, setNotes] = useState('');
   const [loadedId, setLoadedId] = useState<string | null>(null);
   const days = useMemo(() => [form.date], [form.date]);
