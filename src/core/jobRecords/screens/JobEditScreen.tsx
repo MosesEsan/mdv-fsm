@@ -1,85 +1,125 @@
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import { usePickPhotos } from '@/core/jobFiles';
-import { CustomerPicker, customerProblems, customerValues, type Customer, type CustomerInput } from '@/core/customers';
-import { Button, Card, Chip, ErrorText, Heading, Loading, Muted, Screen, TextField, styles } from '@/core/ui';
+import { Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useCustomerSearch, type Customer } from '@/core/customers';
+import { choosePhotoSource, usePickPhotos } from '@/core/jobFiles';
+import { Button, Card, Chip, ErrorText, Notice, Screen, TextField, colors, styles } from '@/core/ui';
+import { AppBar, ListRow, LoadingCards, PhotoGrid, SectionLabel } from '@/core/ui/kit';
 import { useJobMutations, useJobRecord, usePeople } from '../hooks';
-import { emptyJobForm, firstName, jobFormProblems, type JobForm } from '../rules';
-import { PickedPhotos } from '../components/PickedPhotos';
+import { firstName } from '../rules';
 
 type Props = { jobId: string | null; onSaved: (jobId: string) => void };
+type Form = { title: string; name: string; phone: string; address: string; instructions: string; startOn: string; people: string[] };
+const empty: Form = { title: '', name: '', phone: '', address: '', instructions: '', startOn: '', people: [] };
+const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
-/** New job, or edit one: what, who for, where, instructions, start date, who's on it, before photos. */
+/** Plain-English problems, listed above Save after the first try (flows board: New job). */
+export function newJobProblems(f: Form): string[] {
+  const out: string[] = [];
+  if (!f.title.trim()) out.push('Add what the job is.');
+  if (!f.name.trim()) out.push('Add the customer’s name.');
+  if (!f.address.trim()) out.push('Add the address.');
+  if (f.startOn.trim() && !ISO.test(f.startOn.trim())) out.push('Write the start date like 2026-10-22, or leave it blank.');
+  return out;
+}
+
+/** New job, or edit one: the job, the customer, instructions, who's on it and before photos, on one screen. */
 export function JobEditScreen({ jobId, onSaved }: Props) {
+  const router = useRouter();
   const isNew = !jobId;
   const record = useJobRecord(jobId ?? '');
   const people = usePeople();
   const { save } = useJobMutations();
   const photos = usePickPhotos();
-  const [form, setForm] = useState<JobForm>(emptyJobForm);
-  const [customer, setCustomer] = useState<Customer | null>(null);
-  const [newCustomer, setNewCustomer] = useState<CustomerInput | null>(null);
+  const [f, setF] = useState<Form>(empty);
+  const [picked, setPicked] = useState<Customer | null>(null);
+  const [find, setFind] = useState('');
   const [tried, setTried] = useState(false);
   const [loaded, setLoaded] = useState(isNew);
+  const search = useCustomerSearch(find.trim().length >= 2 ? find : '');
 
   useEffect(() => {
     const r = record.data;
     if (isNew || loaded || !r) return;
-    setForm({ summary: r.summary ?? '', siteAddress: r.site_address ?? '', instructions: r.instructions ?? '', startOn: r.start_on ?? '', peopleIds: r.people.map((p) => p.id) });
-    if (r.customer_id) setCustomer({ id: r.customer_id, name: r.customer_name ?? '', phone: r.customer_phone, email: null, address: r.customer_address, notes: null });
+    setF({ title: r.summary ?? '', name: r.customer_name ?? '', phone: r.customer_phone ?? '', address: r.site_address ?? r.customer_address ?? '',
+      instructions: r.instructions ?? '', startOn: r.start_on ?? '', people: r.people.map((p) => p.id) });
+    if (r.customer_id) setPicked({ id: r.customer_id, name: r.customer_name ?? '', phone: r.customer_phone, email: null, address: r.customer_address, notes: null });
     setLoaded(true);
   }, [record.data, isNew, loaded]);
 
-  if (!isNew && !loaded) return <Screen>{record.isLoading ? <Loading /> : <ErrorText error={record.error ?? 'This job could not be found.'} />}</Screen>;
+  const back = () => (router.canGoBack() ? router.back() : router.replace('/jobs'));
+  const set = <K extends keyof Form>(k: K) => (v: Form[K]) => setF((x) => ({ ...x, [k]: v }));
+  const pick = (c: Customer) => { setPicked(c); setFind(''); setF((x) => ({ ...x, name: c.name, phone: c.phone ?? '', address: x.address || c.address || '' })); };
+  // Typing a different name means a different (new) customer.
+  const samePicked = picked && picked.name === f.name.trim() && (picked.phone ?? '') === f.phone.trim();
+  const problems = newJobProblems(f);
 
-  const set = <K extends keyof JobForm>(k: K, v: JobForm[K]) => setForm((f) => ({ ...f, [k]: v }));
-  const togglePerson = (id: string) => set('peopleIds', form.peopleIds.includes(id) ? form.peopleIds.filter((x) => x !== id) : [...form.peopleIds, id]);
-  const problems = [...jobFormProblems(form, !!customer || !!newCustomer), ...(newCustomer ? customerProblems(newCustomer) : [])];
+  const chooseSource = () => choosePhotoSource(photos.pick, 'Before photos');
 
   const submit = () => {
     setTried(true);
     if (problems.length) return;
-    const nc = newCustomer ? customerValues(newCustomer) : null;
     save.mutate({
       job: {
-        id: jobId, summary: form.summary.trim(), siteAddress: form.siteAddress.trim(), instructions: form.instructions.trim(),
-        startOn: form.startOn.trim() || null, customerId: customer?.id ?? null,
-        newCustomer: nc ? { name: nc.name, phone: nc.phone, email: nc.email, address: nc.address } : null, peopleIds: form.peopleIds,
+        id: jobId, summary: f.title.trim(), siteAddress: f.address.trim(), instructions: f.instructions.trim(), startOn: f.startOn.trim() || null,
+        customerId: samePicked ? picked!.id : null,
+        newCustomer: samePicked ? null : { name: f.name.trim(), phone: f.phone.trim() || null, email: null, address: f.address.trim() || null },
+        peopleIds: f.people,
       },
       beforePhotos: photos.photos,
     }, { onSuccess: (id) => { photos.clear(); onSaved(id); } });
   };
 
   return (
-    <Screen>
-      <Card>
-        <TextField label="What's the job?" value={form.summary} onChange={(v) => set('summary', v)} placeholder="e.g. Bathroom refit, leaking tap, repaint hall" autoCapitalize="sentences" />
-      </Card>
-      <Card>
-        <Heading>Customer</Heading>
-        <CustomerPicker selected={customer} onSelect={setCustomer} newCustomer={newCustomer} onNewCustomer={setNewCustomer} />
-      </Card>
-      <Card>
-        <TextField label="Site address" value={form.siteAddress} onChange={(v) => set('siteAddress', v)} hint="Leave blank to use the customer's address" />
-        <TextField label="Instructions for the team" value={form.instructions} onChange={(v) => set('instructions', v)} multiline placeholder="Access, key safe, what to do, what to watch out for" />
-        <TextField label="Start date" value={form.startOn} onChange={(v) => set('startOn', v)} placeholder="2026-10-22" hint="Optional" keyboardType="numbers-and-punctuation" />
-      </Card>
-      <Card>
-        <Heading>Who's on it</Heading>
-        {people.isLoading ? <Loading /> : null}
-        <ErrorText error={people.error} />
-        <View style={styles.wrap}>
-          {(people.data ?? []).map((p) => <Chip key={p.id} label={firstName(p.fullName)} selected={form.peopleIds.includes(p.id)} onPress={() => togglePerson(p.id)} />)}
-        </View>
-        <Muted>Only the people picked here (and managers) can see this job.</Muted>
-      </Card>
-      <Card>
-        <Heading>{isNew ? 'Before photos' : 'Add before photos'}</Heading>
-        <PickedPhotos {...photos} />
-      </Card>
-      {tried && problems.length ? <ErrorText error={problems.join('\n')} /> : null}
-      <ErrorText error={save.error} />
-      <Button title={isNew ? 'Create job' : 'Save changes'} busy={save.isPending} onPress={submit} />
-    </Screen>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <AppBar title={isNew ? 'New job' : 'Edit job'} onBack={back} />
+      {!loaded ? <Screen><LoadingCards /></Screen> : (
+        <Screen>
+          <Card style={{ gap: 12 }}>
+            <TextField label="What’s the job?" value={f.title} onChange={set('title')} placeholder="e.g. Bathroom renovation" autoCapitalize="sentences"
+              error={tried && !f.title.trim() ? 'Add what the job is.' : null} />
+          </Card>
+
+          <Card style={{ gap: 12 }}>
+            <SectionLabel>Customer</SectionLabel>
+            <TextField label="Find a past customer" value={find} onChange={setFind} placeholder="Name or street" autoCapitalize="none" />
+            {(search.data ?? []).slice(0, 5).map((c) => <ListRow key={c.id} title={c.name} lines={[c.address]} onPress={() => pick(c)} />)}
+            <TextField label="Name" value={f.name} onChange={set('name')} autoCapitalize="words" error={tried && !f.name.trim() ? 'Add the customer’s name.' : null} />
+            <TextField label="Phone" value={f.phone} onChange={set('phone')} keyboardType="phone-pad" />
+            <TextField label="Address" value={f.address} onChange={set('address')} autoCapitalize="words" error={tried && !f.address.trim() ? 'Add the address.' : null} />
+          </Card>
+
+          <Card style={{ gap: 12 }}>
+            <TextField label="Instructions for the team" value={f.instructions} onChange={set('instructions')} multiline autoCapitalize="sentences"
+              placeholder="What needs doing, materials, access, anything to watch out for" />
+            <TextField label="Start date (optional)" value={f.startOn} onChange={set('startOn')} placeholder="e.g. 2026-10-22" keyboardType="numbers-and-punctuation" />
+            <View style={{ gap: 6 }}>
+              <Text style={styles.label}>Who’s on it</Text>
+              <View style={styles.wrap}>
+                {(people.data ?? []).filter((p) => p.role !== 'owner').map((p) => (
+                  <Chip key={p.id} label={firstName(p.fullName)} selected={f.people.includes(p.id)}
+                    onPress={() => set('people')(f.people.includes(p.id) ? f.people.filter((x) => x !== p.id) : [...f.people, p.id])} />
+                ))}
+              </View>
+              <Text style={styles.hint}>They see the job on their phone as soon as you save.</Text>
+            </View>
+          </Card>
+
+          <Card style={{ gap: 10 }}>
+            <SectionLabel>{isNew ? 'Before photos' : 'Add before photos'}</SectionLabel>
+            {photos.photos.length ? (
+              <PhotoGrid photos={photos.photos.map((p) => ({ id: p.uri, thumbUrl: p.thumbUri }))} onOpen={(i) => photos.remove(photos.photos[i].uri)} />
+            ) : null}
+            {photos.photos.length ? <Text style={styles.hint}>Tap a photo to take it off.</Text> : null}
+            <Button title="Take or choose photos" icon="camera-outline" variant="secondary" busy={photos.busy} onPress={chooseSource} />
+            <ErrorText error={photos.error} />
+          </Card>
+
+          {tried && problems.length ? <Notice tone="bad" title="Before you save:">{problems.map((p) => `• ${p}`).join('\n')}</Notice> : null}
+          <ErrorText error={save.error} />
+          <Button title={isNew ? 'Save job' : 'Save changes'} size="lg" busy={save.isPending} onPress={submit} />
+        </Screen>
+      )}
+    </View>
   );
 }

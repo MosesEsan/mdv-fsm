@@ -9,7 +9,7 @@ import { queueJobPhotos, type PhotoStage, type PreparedPhoto } from '@/core/jobF
 import { useTenantSettings } from '@/core/settings/useTenantSettings';
 import { getSupabase } from '@/core/supabase';
 import {
-  deleteUpdate, editUpdate, fetchJobList, fetchJobRecord, fetchPeople, fetchUpdates, jobKeys, postUpdate, saveJob, setJobStatus,
+  deleteUpdate, editUpdate, fetchJobList, fetchJobRecord, fetchPeople, fetchUpdates, jobKeys, postUpdate, saveJob, setAssignees, setJobStatus, updateInstructions,
   type SaveJobInput,
 } from './api';
 import type { JobFilter, JobStatus } from './rules';
@@ -52,6 +52,14 @@ export function useJobMutations() {
     }),
     edit: useMutation({ mutationFn: (v: { id: string; body: string }) => editUpdate(v.id, v.body), onSuccess: refresh }),
     remove: useMutation({ mutationFn: deleteUpdate, onSuccess: refresh }),
+    instructions: useMutation({ mutationFn: (v: { id: string; text: string }) => updateInstructions(v.id, v.text), onSuccess: refresh }),
+    people: useMutation({
+      mutationFn: (v: { jobId: string; add: string[]; remove: string[] }) => {
+        if (!tenantId) throw new Error('Please sign in again.');
+        return setAssignees(tenantId, v.jobId, v.add, v.remove);
+      },
+      onSuccess: refresh,
+    }),
   };
 }
 

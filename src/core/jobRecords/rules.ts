@@ -74,3 +74,15 @@ export function nextStatuses(s: string): JobStatus[] {
   if (s === 'completed' || s === 'cancelled') return ['in_progress'];
   return [];
 }
+
+/** Status pill: words plus an icon (flows board design guide). */
+export function statusPill(s: string): { label: string; tone: 'grey' | 'amber' | 'green'; icon?: string } {
+  if (s === 'in_progress') return { label: 'In progress', tone: 'amber', icon: 'time-outline' };
+  if (s === 'completed') return { label: 'Completed', tone: 'green', icon: 'checkmark' };
+  return { label: statusLabel(s), tone: 'grey' };
+}
+
+/** Viewer label: "Old bath · Before · Adam". */
+export function photoLabel(caption: string | null | undefined, stage: PhotoStage | null | undefined, who: string | null | undefined): string {
+  return [caption, stage ? STAGE_LABEL[stage] : null, who ? firstName(who) : null].filter(Boolean).join(' · ') || 'Photo';
+}

@@ -5,7 +5,7 @@ import { JOB_RECORDS } from '@/core/jobRecords';
 export default function JobsLayout() {
   return (
     <FeatureGate feature={JOB_RECORDS} name="Jobs">
-      <Stack>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" options={{ title: 'Jobs' }} />
         <Stack.Screen name="new" options={{ title: 'New job' }} />
         <Stack.Screen name="[jobId]/index" options={{ title: 'Job' }} />

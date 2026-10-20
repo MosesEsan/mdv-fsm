@@ -102,3 +102,22 @@ export async function deleteUpdate(id: string): Promise<void> {
   const { error } = await getSupabase().from('job_updates').delete().eq('id', id);
   fail(error);
 }
+
+/** Owner or manager edits the instructions only (the rest of the job stays as it is). */
+export async function updateInstructions(id: string, instructions: string): Promise<void> {
+  const { error } = await getSupabase().from('jobs').update({ instructions: instructions.trim() || null }).eq('id', id);
+  fail(error);
+}
+
+/** Puts people on a job and takes others off. People added see it straight away. */
+export async function setAssignees(tenantId: string, jobId: string, add: string[], remove: string[]): Promise<void> {
+  const db = getSupabase();
+  if (add.length) {
+    const { error } = await db.from('job_assignees').insert(add.map((user_id) => ({ tenant_id: tenantId, job_id: jobId, user_id })));
+    fail(error);
+  }
+  if (remove.length) {
+    const { error } = await db.from('job_assignees').delete().eq('job_id', jobId).in('user_id', remove);
+    fail(error);
+  }
+}

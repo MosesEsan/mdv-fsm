@@ -37,3 +37,25 @@ export function registerJobListAddon(addon: JobListAddon): void {
 export function jobListAddons(): JobListAddon[] {
   return [...listAddons.values()];
 }
+
+/** A button a module adds at the bottom of a job page, next to "Post update" (e.g. "Log extra work"). */
+export type JobAction = {
+  id: string;
+  feature: string;
+  label: string;
+  /** Ionicons name. */
+  icon?: string;
+  variant?: 'primary' | 'secondary' | 'accent';
+  /** Where it goes, e.g. (jobId) => `/extra-work/new?jobId=${jobId}`. */
+  href: (jobId: string) => string;
+};
+
+const actions = new Map<string, JobAction>();
+
+export function registerJobAction(action: JobAction): void {
+  if (!actions.has(action.id)) actions.set(action.id, action);
+}
+
+export function jobActionsFor(isFeatureEnabled: (feature: string) => boolean): JobAction[] {
+  return [...actions.values()].filter((a) => isFeatureEnabled(a.feature));
+}
