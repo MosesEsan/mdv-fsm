@@ -18,6 +18,8 @@ export type NavItem = {
   icon?: string;
   /** Hook giving a number to show on the tile when something needs the person (e.g. new enquiries). Keep it a cached query. */
   useCount?: () => number | undefined;
+  /** This entry is the business's main screen: the app opens on it instead of Home (e.g. the jobs list). */
+  startHere?: boolean;
 };
 
 export type ModuleDefinition = {

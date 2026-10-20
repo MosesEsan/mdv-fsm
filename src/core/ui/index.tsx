@@ -2,6 +2,7 @@
 // (tenants.branding) arrive through ThemeProvider, so no client is named in code.
 // Sizes follow the flows board's design guide (spacing 4/8/12/16/24, fields and buttons 48, the big action 52).
 import { createContext, useContext, type ReactNode } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type ViewStyle } from 'react-native';
 
 export const colors = {
@@ -88,17 +89,23 @@ export function Notice({ tone = 'info', title, children }: { tone?: keyof typeof
 type ButtonProps = {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'danger';
-  /** 'lg' is the one big action on a screen (52 high). */
-  size?: 'md' | 'lg';
+  /** accent: the business's second colour (e.g. Log extra work); ok: green (e.g. Mark as completed). */
+  variant?: 'primary' | 'secondary' | 'danger' | 'accent' | 'ok';
+  /** 'lg' is the one big action on a screen (52 high); 'sm' fits in cards and bars (44). */
+  size?: 'sm' | 'md' | 'lg';
+  /** Ionicons name shown before the title. */
+  icon?: string;
   disabled?: boolean;
   busy?: boolean;
 };
 
-export function Button({ title, onPress, variant = 'primary', size = 'md', disabled, busy }: ButtonProps) {
+export function Button({ title, onPress, variant = 'primary', size = 'md', icon, disabled, busy }: ButtonProps) {
   const theme = useTheme();
   const filled = variant !== 'secondary';
-  const bg = variant === 'danger' ? colors.danger : variant === 'primary' ? theme.primary : colors.surface;
+  const bg = variant === 'danger' ? colors.danger : variant === 'ok' ? colors.success : variant === 'accent' ? theme.accent
+    : variant === 'primary' ? theme.primary : colors.surface;
+  const fg = filled ? '#fff' : colors.text;
+  const font = size === 'lg' ? 17 : size === 'sm' ? 15 : 16;
   return (
     <Pressable
       accessibilityRole="button"
@@ -108,14 +115,18 @@ export function Button({ title, onPress, variant = 'primary', size = 'md', disab
       style={({ pressed }) => [
         styles.button,
         size === 'lg' && { minHeight: 52 },
+        size === 'sm' && { minHeight: 44, paddingHorizontal: 14, paddingVertical: 8 },
         { backgroundColor: bg, opacity: disabled ? 0.5 : pressed ? 0.8 : 1 },
         !filled && { borderWidth: 1, borderColor: colors.border },
       ]}
     >
       {busy ? (
-        <ActivityIndicator color={filled ? '#fff' : colors.text} />
+        <ActivityIndicator color={fg} />
       ) : (
-        <Text style={[styles.buttonText, size === 'lg' && { fontSize: 17 }, { color: filled ? '#fff' : colors.text }]}>{title}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {icon ? <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={font + 1} color={fg} /> : null}
+          <Text style={[styles.buttonText, { fontSize: font, color: fg }]}>{title}</Text>
+        </View>
       )}
     </Pressable>
   );

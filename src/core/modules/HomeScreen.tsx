@@ -1,6 +1,6 @@
 import { Image, Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter, type Href } from 'expo-router';
+import { Redirect, useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSession } from '@/core/auth/AuthProvider';
 import { useBranding } from '@/core/branding';
@@ -27,6 +27,10 @@ export function HomeScreen() {
   const done = allSteps.map((s) => s.useDone());
   const steps = stepsToShow(allSteps, done, claims?.role, isFeatureEnabled);
   const cards = homeCardsFor(claims?.role, isFeatureEnabled);
+
+  // A business whose main screen is a list of its work (e.g. job records) opens straight on it.
+  const start = items.find((i) => i.startHere);
+  if (start) return <Redirect href={start.path as Href} />;
 
   const fullName = typeof session?.user.user_metadata?.full_name === 'string' ? session.user.user_metadata.full_name : session?.user.email;
 
