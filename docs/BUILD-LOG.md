@@ -153,3 +153,12 @@ npx supabase functions serve     # ts-export, platform-invite
 npx expo start --lan             # phone; add --web for /admin
 ```
 Invite emails: http://localhost:54324.
+
+### 2026-10-20 — Mobile screens matched to the flows board; AG demo; handover
+- Shared UI kit from the design guide (`src/core/ui/kit.tsx`), button variants and icons (`@expo/vector-icons`).
+- Sign in, pick a password and Home rebuilt to the board. Home registers tiles, counts, getting-started steps and cards per feature.
+- Job records and extra work screens rebuilt to the board; job-records businesses open on the jobs list; Edit details; photo source choice.
+- AG Property Maintenance demo business: name, logo, colours, owner Arnis Gelsons, 23 demo photos (`scripts/demo-photos`).
+- Flows board sources moved into the repo (`design/flows-board/`), with job records merged into the main board.
+- `docs/HANDOVER.md` and `CLAUDE.md` for new sessions; `scripts/db-harness/` runs database tests without Docker.
+- Not yet run on a phone; hosted dev Supabase not yet deployed.

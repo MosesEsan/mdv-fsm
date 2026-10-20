@@ -1,0 +1,86 @@
+/* ===== engine: devices ===== */
+var INST={};
+var DEV={phone:{w:414,h:868},tablet:{w:1216,h:856},desktop:{w:1280,h:842}};
+var NSX=(typeof NS!=='undefined')?NS:{};
+function nsOf(inst){return (inst&&inst.ns&&NSX[inst.ns])||{S:S,ACT:ACT,LIVE:LIVE,CFG:CFG};}
+function makeInst(id,step,brand,flow){var stack=step.stack?step.stack.slice():[step.s];return {id:id,stack:stack,st:clone(step.init),brand:brand,dev:step.dev||'phone',ns:(flow&&flow.ns)||''};}
+function screenOut(inst){var top=inst.stack[inst.stack.length-1];var ctx={inst:inst,st:inst.st,b:BRANDS[inst.brand],dev:inst.dev};var fn=nsOf(inst).S[top];
+ try{if(!fn)throw new Error('Unknown screen '+top);return fn(ctx);}catch(err){if(window.console)console.error(err);return {body:'<div class="ap-scroll"><div class="ap-alert bad">SCREEN ERROR: '+esc(err.message)+'</div></div>'};}}
+function devInner(inst){var r=screenOut(inst);var dark=inst.st.sheet==='photo';var C=nsOf(inst).CFG;var time=inst.dev==='tablet'?C.time+'  '+C.todayShort:C.time;
+ var ov=(r.overlay||'')+(inst.st.toast?'<div class="ap-toast" role="status">'+ic('check',18)+'<span>'+esc(inst.st.toast)+'</span></div>':'');
+ return '<div class="ap-status'+(r.status==='dk'&&!dark?' dk':'')+'"><span>'+time+'</span><span class="r"><svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5" width="3" height="7" rx="1" fill="currentColor"/><rect x="10" y="2" width="3" height="10" rx="1" fill="currentColor" opacity="'+(inst.st.mode==='offline'?'.3':'1')+'"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor" opacity="'+(inst.st.mode==='offline'?'.3':'1')+'"/></svg><svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><rect x="0.5" y="0.5" width="22" height="11" rx="3" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="15" height="8" rx="2" fill="currentColor"/><rect x="24" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg></span></div>'+
+  r.body+'<div class="ap-ovl">'+ov+'</div><div class="ap-home"></div>';}
+function devHTML(inst){var d=DEV[inst.dev];var b=BRANDS[inst.brand];var cls='ap-root ap-'+inst.dev+(inst.st.sheet==='photo'?' dkbg':'');
+ var inner='<div class="'+cls+'" data-dev="'+inst.id+'" data-top="'+inst.stack[inst.stack.length-1]+'" style="'+brandVars(b)+'">'+devInner(inst)+'</div>';
+ if(inst.dev==='phone')inner='<div class="fb-phone" style="position:relative"><div class="fb-island"></div>'+inner+'</div>';
+ else if(inst.dev==='tablet')inner='<div class="fb-tablet">'+inner+'</div>';
+ else inner='<div class="fb-desk"><div class="fb-desk-bar"><i></i><i></i><i></i><span>'+esc(nsOf(inst).CFG.url)+'</span></div>'+inner+'</div>';
+ var lbl=(THEMES.length>1||inst.ns?b.label+' · ':'')+(inst.dev==='desktop'?'web':inst.dev);
+ return '<div class="fb-devwrap" data-kind="'+inst.dev+'"><div class="fb-devlabel">'+esc(lbl)+'</div><div class="fb-devbox" data-w="'+d.w+'" data-h="'+d.h+'"><div class="fb-scale">'+inner+'</div></div></div>';}
+function paint(inst){var el=document.querySelector('[data-dev="'+inst.id+'"]');if(!el)return;var sc=el.querySelector('.ap-scroll');var keep=sc?sc.scrollTop:0;var topWas=el.getAttribute('data-top');
+ el.className='ap-root ap-'+inst.dev+(inst.st.sheet==='photo'?' dkbg':'');el.innerHTML=devInner(inst);var top=inst.stack[inst.stack.length-1];el.setAttribute('data-top',top);
+ var sc2=el.querySelector('.ap-scroll');if(sc2&&topWas===top)sc2.scrollTop=keep;}
+document.addEventListener('click',function(e){var el=e.target.closest('[data-act]');if(!el)return;var dev=el.closest('[data-dev]');if(!dev)return;e.preventDefault();if(el.disabled)return;
+ var inst=INST[dev.getAttribute('data-dev')];if(!inst)return;var st=inst.st;var act=el.getAttribute('data-act'),arg=el.getAttribute('data-arg')||'';
+ if(act==='closeScrim'){if(e.target!==el)return;st.sheet=null;paint(inst);return;}
+ if(act!=='toast')st.toast=null;if(el.getAttribute('data-set'))applySet(st,el.getAttribute('data-set'));
+ if(act==='go'){inst.stack.push(arg);st.sheet=null;}else if(act==='back'){if(inst.stack.length>1)inst.stack.pop();st.sheet=null;}else if(act==='replace'){inst.stack=[arg];st.sheet=null;st.err=null;}
+ else if(act==='nav'){inst.stack=[arg];st.sheet=null;}
+ else if(act==='set')applySet(st,arg);else if(act==='toggle')st[arg]=!st[arg];else if(act==='sheet')st.sheet=arg;else if(act==='close')st.sheet=null;else if(act==='toast')st.toast=arg;else{var A=nsOf(inst).ACT;if(A[act])A[act](st,arg,inst,el);}
+ paint(inst);});
+document.addEventListener('input',function(e){var el=e.target;var dev=el.closest&&el.closest('[data-dev]');if(!dev)return;var inst=INST[dev.getAttribute('data-dev')];if(!inst)return;var p=el.getAttribute('data-bind');if(p)setPath(inst.st,p,el.value);var lv=el.getAttribute('data-live');var L=nsOf(inst).LIVE||{};if(lv&&L[lv])L[lv](inst.st,dev);});
+document.addEventListener('change',function(e){var el=e.target;var dev=el.closest&&el.closest('[data-dev]');if(!dev)return;var inst=INST[dev.getAttribute('data-dev')];if(!inst)return;var p=el.getAttribute('data-bind-r');if(p){setPath(inst.st,p,el.value);paint(inst);}});
+document.addEventListener('submit',function(e){if(e.target.closest('[data-dev]'))e.preventDefault();});
+
+/* ===== engine: board ===== */
+function flowById(id){for(var i=0;i<FLOWS.length;i++)if(FLOWS[i].id===id)return FLOWS[i];return null;}
+var THEMES=CFG.themes||Object.keys(BRANDS);var VIEW='flows',THEME=THEMES[0],SIZE='M',JOURNEY=JOURNEYS[0].id,FLOW=JOURNEYS[0].flows[0];
+var LS=CFG.key||'fb';
+try{THEME=localStorage.getItem(LS+'.theme')||THEME;SIZE=localStorage.getItem(LS+'.size')||SIZE;}catch(e){}
+if(!BRANDS[THEME]&&!(THEME==='both'&&THEMES.length>1))THEME=THEMES[0];if(['S','M','L'].indexOf(SIZE)<0)SIZE='M';
+var SCALE={phone:{S:.56,M:.74,L:.94},tablet:{S:.4,M:.5,L:.62},desktop:{S:.4,M:.5,L:.62}};
+function brandsShown(){return THEME==='both'?THEMES:[THEME];}
+function journeyOf(id){var j=JOURNEYS.filter(function(x){return x.id===JOURNEY;})[0];if(j&&j.flows.indexOf(id)>=0)return j;for(var i=0;i<JOURNEYS.length;i++)if(JOURNEYS[i].flows.indexOf(id)>=0)return JOURNEYS[i];return JOURNEYS[0];}
+function buildThemeButtons(){var g=document.getElementById('fbThemes');if(!g)return;var h=THEMES.map(function(k){return '<button type="button" data-board="theme" data-v="'+k+'">'+esc(BRANDS[k].label)+'</button>';}).join('');if(THEMES.length>1)h+='<button type="button" data-board="theme" data-v="both">Both</button>';g.innerHTML=h;}
+function syncHead(){[].forEach.call(document.querySelectorAll('[data-board]'),function(b){var k=b.getAttribute('data-board'),v=b.getAttribute('data-v');var on=(k==='view'&&v===VIEW)||(k==='theme'&&v===THEME)||(k==='size'&&v===SIZE);b.setAttribute('aria-pressed',on?'true':'false');});}
+function panelHTML(){var j=JOURNEYS.filter(function(x){return x.id===JOURNEY;})[0];
+ return '<section class="fb-panel" aria-label="Journeys and flows"><div class="fb-pills" role="group" aria-label="Journeys">'+JOURNEYS.map(function(x){return '<button type="button" class="fb-pill" aria-pressed="'+(x.id===JOURNEY)+'" data-journey="'+x.id+'">'+esc(x.label)+' <span class="c">'+x.flows.length+' flows</span></button>';}).join('')+'</div>'+
+ '<p class="fb-desc">'+esc(j.desc)+'</p><nav class="fb-pills" aria-label="Flows in this journey">'+j.flows.map(function(id,i){var f=flowById(id);return '<a class="fb-pill" href="#'+id+'"'+(id===FLOW?' aria-current="true"':'')+'><span class="n">'+(i+1)+'</span>'+esc(f.title)+' <span class="c">'+f.steps.length+' step'+(f.steps.length>1?'s':'')+'</span></a>';}).join('')+'</nav>'+
+ '<p class="fb-todo"><b>Still to design:</b> '+esc(PLANNED.join(' · '))+'.</p></section>';}
+function flowHTML(){var f=flowById(FLOW);var j=journeyOf(FLOW);var idx=j.flows.indexOf(FLOW);
+ var h='<section class="fb-flowhead"><span class="fb-eyebrow">'+esc(j.label)+' · '+(idx+1)+' of '+j.flows.length+(f.states?' · states':'')+'</span><h2>'+esc(f.title)+'</h2><p>'+esc(f.summary)+'</p><span class="fb-crumb">Starts from: '+f.starts.map(esc).join(' › ')+'</span></section>';
+ f.steps.forEach(function(s,i){var num=f.states?String.fromCharCode(65+i):String(i+1);
+  h+='<article class="fb-step" id="'+f.id+'-'+num+'"><div class="fb-stepinfo"><span class="fb-stepnum" aria-hidden="true">'+num+'</span><h3><span class="fb-sr">Step '+num+': </span>'+esc(s.t)+'</h3><div class="fb-how"><span class="k">'+(f.states?'When':'How you get here')+'</span>'+esc(s.how)+'</div><p class="fb-note">'+esc(s.note)+'</p></div><div class="fb-devs">'+
+  brandsShown().map(function(b){var id=f.id+':'+i+':'+b;var bb=(f.brandMap&&f.brandMap[b])||b;if(!INST[id])INST[id]=makeInst(id,s,bb,f);return devHTML(INST[id]);}).join('')+'</div></article>';});
+ var nx=f.next?flowById(f.next):null;
+ h+='<div class="fb-next"><span class="fb-arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="t">'+(nx?'<b>Next: '+esc(nx.title)+'</b><br><span class="fb-note">'+esc(nx.summary.split('. ')[0].replace(/\.$/,''))+'.</span>':'<b>End of this journey.</b><br><span class="fb-note">Pick another journey above.</span>')+'</span>'+(nx?'<a class="fb-link" href="#'+nx.id+'">Go to '+esc(nx.title)+'</a>':'')+'</div>';
+ var prev=idx>0?flowById(j.flows[idx-1]):null,next=idx<j.flows.length-1?flowById(j.flows[idx+1]):null;
+ h+='<nav class="fb-pager" aria-label="Flows"><a class="fb-link" href="#'+(prev?prev.id:'')+'"'+(prev?'':' aria-disabled="true"')+'>‹ '+(prev?esc(prev.title):'Previous flow')+'</a><a class="fb-link" href="#'+(next?next.id:'')+'"'+(next?'':' aria-disabled="true"')+'>'+(next?esc(next.title):'Next flow')+' ›</a></nav>';
+ return h;}
+function guideHTML(){var bs=brandsShown();var G=CFG.guide||{};
+ var neutrals=[['Text','#1F2328','Body text, titles'],['Muted','#59636E','Secondary text, hints'],['Border','#D1D9E0','Card and field edges'],['Card','#FFFFFF','Cards, sheets, fields'],['Background','#F6F8FA','Screen background'],['Danger','#CF222E','Errors, problems flagged'],['Success','#1A7F37','Saved, approved, done'],['Warning','#9A6700','Waiting, overtime, needs a look']];
+ var h='<section class="fb-gsec"><h2>Colour tokens</h2><p class="fb-note">'+esc(G.colourNote||'The business sets two colours; everything else is shared and neutral.')+'</p>';
+ bs.forEach(function(k){var b=BRANDS[k];h+='<h3>'+esc(b.name)+'</h3><div class="fb-tblwrap"><table class="fb-tbl"><thead><tr><th>Swatch</th><th>Token</th><th>Value</th><th>Use</th><th>Contrast</th></tr></thead><tbody>'+
+  [['main',b.main,'Top bar, main buttons, selected chips','#FFFFFF'],['mainDk',b.mainDk,'Pressed states','#FFFFFF'],['accent',b.accent,'Today, counts that need action','#FFFFFF'],['tint',b.tint,'Icon tiles, info notes, calendar blocks','main']].map(function(r){var against=r[3]==='main'?b.main:r[3];var c=ratio(r[1],against);return '<tr><td><span class="fb-sw" style="background:'+r[1]+'"></span></td><td class="fb-code">--'+r[0]+'</td><td class="fb-code">'+r[1]+'</td><td>'+r[2]+'</td><td class="fb-pass">'+fh(c)+' : 1 '+(r[3]==='main'?'with main text':'with white text')+' '+(c>=4.5?'✓ pass':'✗ fail')+'</td></tr>';}).join('')+'</tbody></table></div>';});
+ h+='<h3>Shared neutrals and status</h3><div class="fb-tblwrap"><table class="fb-tbl"><thead><tr><th>Swatch</th><th>Token</th><th>Value</th><th>Use</th><th>Contrast on card</th></tr></thead><tbody>'+neutrals.map(function(r){var c=ratio(r[1],'#FFFFFF');return '<tr><td><span class="fb-sw" style="background:'+r[1]+'"></span></td><td class="fb-code">--n-'+r[0].toLowerCase()+'</td><td class="fb-code">'+r[1]+'</td><td>'+r[2]+'</td><td>'+(c>1.5?fh(c)+' : 1':'surface')+'</td></tr>';}).join('')+'</tbody></table></div></section>';
+ h+='<section class="fb-gsec"><h2>Type scale</h2><p class="fb-note">System font on each platform (San Francisco on iOS, Roboto on Android, the system font on the web dashboard). React Native sizes are density-independent, so the same number works on both phones.</p><div class="fb-tblwrap"><table class="fb-tbl"><thead><tr><th>Role</th><th>Sample</th><th>iOS (pt)</th><th>Android (sp)</th><th>Weight</th></tr></thead><tbody>'+
+  (G.type||[['Page title','Today',26,'700'],['Bar title','My jobs',19,'700'],['Card title','Hardwood floor, living room',17,'700'],['Body','Sanded and first coat done.',16,'400'],['Secondary','14 Elm Park, Naas',14,'400'],['Small, hints','Type what was done today',13,'400'],['Label','CUSTOMER',12,'700, uppercase']]).map(function(r){return '<tr><td>'+r[0]+'</td><td><span style="font-family:-apple-system,BlinkMacSystemFont,Roboto,sans-serif;font-size:'+r[2]+'px;font-weight:'+r[3].slice(0,3)+'">'+esc(r[1])+'</span></td><td>'+r[2]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';}).join('')+'</tbody></table></div></section>';
+ h+='<section class="fb-gsec"><h2>Spacing and shape</h2><ul><li>Spacing steps: 4, 8, 12, 16, 24. Screen padding 16 on phones, 24 on tablets and the dashboard.</li><li>Corners: 10 for buttons and fields, 12 for cards and rows, 18 for sheet tops, full round for chips.</li><li>Touch targets: 44 minimum; main buttons 48; the one big action on a screen 52.</li><li>No shadows inside the app; a 1 px border sets cards apart.</li></ul></section>';
+ h+='<section class="fb-gsec"><h2>Components</h2><div class="fb-gridc">'+bs.map(function(k){var b=BRANDS[k];return '<div class="fb-specimen"><div class="ap-root ap-phone" style="'+brandVars(b)+';--sa-bot:0px"><b>'+esc(b.name)+'</b><div class="ap-btns"><button type="button" class="ap-btn">Save</button><button type="button" class="ap-btn sec">Cancel</button><button type="button" class="ap-btn dan">Delete</button><button type="button" class="ap-btn" disabled>Save</button></div><div class="ap-chips">'+chip('Selected',true,'')+chip('Not selected',false,'')+'<button type="button" class="ap-chip" disabled>Not available</button></div>'+field('g-'+k+'-a','A field','',{path:'x',hint:'A hint under the field'})+field('g-'+k+'-b','A field with a problem','',{path:'x',bad:1,err:'Say what is wrong and how to fix it.'})+'<div class="ap-chips">'+(G.pills||[]).map(function(p){return pill(p[0],p[1],p[2]);}).join('')+'</div><div class="ap-alert warn">'+ic('nosig',20)+'<div><span><b>2 photos waiting to upload.</b> No signal? It will keep trying.</span></div></div>'+photoTiles([{l:'Done',w:0},{l:'Waiting',w:1}])+'<button type="button" class="ap-row"><span class="t"><b>A list row</b><span class="m">Second line in muted text</span></span><span class="chev">›</span></button>'+emptyBox('list','Nothing here yet','An empty state says what will appear here and offers the first action.')+'</div></div>';}).join('')+'</div></section>';
+ h+='<section class="fb-gsec"><h2>Patterns</h2><ul>'+(G.patterns||[]).map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></section>';
+ h+='<section class="fb-gsec"><h2>Accessibility and copy</h2><ul>'+(G.copy||[]).concat(['Status is always words plus an icon or shape, never colour alone.','Every field has a visible label. Problems are said in plain English with how to fix them.','Irish formats: euro with two decimals, "Tue 20 Oct", 24-hour times like 08:30.']).map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></section>';
+ return '<div class="fb-guide">'+h+'</div>';}
+function render(){syncHead();var main=document.getElementById('fbMain');
+ if(VIEW==='guide'){main.innerHTML=guideHTML();return;}
+ main.innerHTML=panelHTML()+flowHTML();fit();}
+function fit(){[].forEach.call(document.querySelectorAll('.fb-devbox'),function(box){var wrap=box.closest('.fb-devwrap');var kind=wrap.getAttribute('data-kind');var w=+box.getAttribute('data-w'),hh=+box.getAttribute('data-h');var s=SCALE[kind][SIZE];
+ var col=wrap.parentNode;var avail=col.clientWidth;var n=brandsShown().length;var per=(kind==='phone')?(avail-(n-1)*24)/n:avail;if(per>0&&w*s>per)s=Math.max(.2,per/w);
+ box.style.width=Math.floor(w*s)+'px';box.style.height=Math.floor(hh*s)+'px';box.firstChild.style.transform='scale('+s+')';});}
+function openFlow(id){var f=flowById(id);if(!f)return;FLOW=id;JOURNEY=journeyOf(id).id;render();}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-board]');if(b){var k=b.getAttribute('data-board'),v=b.getAttribute('data-v');if(k==='view')VIEW=v;if(k==='theme'){THEME=v;try{localStorage.setItem(LS+'.theme',v);}catch(x){}}if(k==='size'){SIZE=v;try{localStorage.setItem(LS+'.size',v);}catch(x){}}render();return;}
+ var jb=e.target.closest('[data-journey]');if(jb){JOURNEY=jb.getAttribute('data-journey');var j=JOURNEYS.filter(function(x){return x.id===JOURNEY;})[0];FLOW=j.flows[0];try{history.replaceState(null,'','#'+FLOW);}catch(x){}render();return;}});
+window.addEventListener('hashchange',function(){var id=location.hash.slice(1);if(flowById(id)){VIEW='flows';openFlow(id);window.scrollTo(0,0);}});
+var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(fit,120);});
+var h0=location.hash.slice(1);if(flowById(h0)){FLOW=h0;JOURNEY=journeyOf(h0).id;}
+buildThemeButtons();render();
+window.__FB={FLOWS:FLOWS,JOURNEYS:JOURNEYS,INST:INST,render:render,open:openFlow,setTheme:function(t){THEME=t;render();},setView:function(v){VIEW=v;render();},paint:paint,themes:THEMES};
