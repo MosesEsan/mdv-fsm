@@ -13,8 +13,17 @@
     "db:test": "supabase test db",
     "seed:users": "tsx --env-file=.env scripts/seed-users.ts",
     "test:acceptance": "tsx --env-file=.env scripts/test-seed-acceptance.ts",
-    "export:web": "expo export --platform web",
-    "deploy:web": "npx eas-cli@latest deploy --environment preview"
+    "build:web": "expo export --platform web --output-dir dist",
+    "export:web": "npm run build:web",
+    "deploy:supabase": "node --import tsx scripts/deploy-supabase.ts",
+    "admin:create": "node --import tsx scripts/create-platform-admin.ts",
+    "build:ios:preview": "eas build -p ios --profile preview-shared",
+    "build:android:preview": "eas build -p android --profile preview-shared",
+    "build:prod": "eas build --platform all --profile production-shared",
+    "submit:ios": "eas submit -p ios --profile production-shared --latest",
+    "submit:android": "eas submit -p android --profile production-shared --latest",
+    "update:preview": "eas update --channel preview --environment preview",
+    "update:prod": "eas update --channel production --environment production"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -28,6 +37,7 @@
     "expo-print": "~57.0.2",
     "expo-router": "~57.0.28",
     "expo-sharing": "~57.0.23",
+    "expo-updates": "~57.0.26",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",

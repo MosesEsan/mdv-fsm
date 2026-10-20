@@ -1,0 +1,21 @@
+name: EAS Update
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        type: choice
+        description: OTA channel
+        required: true
+        options: [preview, production]
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npx eas-cli update --channel "${{ inputs.channel }}" --environment "${{ inputs.channel }}" --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          CLIENT: shared

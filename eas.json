@@ -1,0 +1,49 @@
+{
+  "cli": { "version": ">= 16.0.0", "appVersionSource": "remote" },
+  "build": {
+    "base": { "node": "22.13.0" },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development",
+      "env": { "CLIENT": "shared" }
+    },
+    "preview-shared": {
+      "extends": "base",
+      "distribution": "internal",
+      "environment": "preview",
+      "channel": "preview",
+      "env": { "CLIENT": "shared" }
+    },
+    "production-shared": {
+      "extends": "base",
+      "environment": "production",
+      "channel": "production",
+      "autoIncrement": true,
+      "env": { "CLIENT": "shared" }
+    },
+    "whitelabel-template": {
+      "extends": "base",
+      "distribution": "internal",
+      "environment": "preview",
+      "channel": "preview",
+      "env": { "CLIENT": "demo-whitelabel" }
+    }
+  },
+  "submit": {
+    "production-shared": {
+      "ios": {
+        "ascAppId": "<ASC_APP_ID>",
+        "appleTeamId": "<APPLE_TEAM_ID>",
+        "ascApiKeyPath": "<EAS_ASC_API_KEY_FILE_SECRET>",
+        "ascApiKeyIssuerId": "<ASC_ISSUER_ID>",
+        "ascApiKeyId": "<ASC_KEY_ID>"
+      },
+      "android": {
+        "track": "internal",
+        "serviceAccountKeyPath": "<EAS_PLAY_SERVICE_ACCOUNT_FILE_SECRET>"
+      }
+    }
+  }
+}

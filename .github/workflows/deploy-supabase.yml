@@ -1,0 +1,51 @@
+name: Deploy Supabase
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  dev:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - run: npm ci
+      - run: mkdir -p deploy/env
+      - name: Write dev deployment environment
+        env:
+          DB_PASSWORD: ${{ secrets.SUPABASE_SHARED_DEV_DB_PASSWORD }}
+          SERVICE_ROLE: ${{ secrets.SUPABASE_SHARED_DEV_SERVICE_ROLE_KEY }}
+          INVITE_URL: ${{ vars.SUPABASE_SHARED_DEV_INVITE_REDIRECT_URL }}
+          RESEND_KEY: ${{ secrets.RESEND_API_KEY }}
+          POSTMARK_KEY: ${{ secrets.POSTMARK_SERVER_TOKEN }}
+        run: printf 'SUPABASE_DB_PASSWORD=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\nINVITE_REDIRECT_URL=%s\nRESEND_API_KEY=%s\nPOSTMARK_SERVER_TOKEN=%s\n' "$DB_PASSWORD" "$SERVICE_ROLE" "$INVITE_URL" "$RESEND_KEY" "$POSTMARK_KEY" > deploy/env/shared-dev.env
+      - run: npm run deploy:supabase -- --env dev
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  prod:
+    if: github.event_name == 'workflow_dispatch'
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - run: npm ci
+      - run: mkdir -p deploy/env
+      - name: Write production deployment environment
+        env:
+          DB_PASSWORD: ${{ secrets.SUPABASE_SHARED_PROD_DB_PASSWORD }}
+          SERVICE_ROLE: ${{ secrets.SUPABASE_SHARED_PROD_SERVICE_ROLE_KEY }}
+          INVITE_URL: ${{ vars.SUPABASE_SHARED_PROD_INVITE_REDIRECT_URL }}
+          RESEND_KEY: ${{ secrets.RESEND_API_KEY }}
+          POSTMARK_KEY: ${{ secrets.POSTMARK_SERVER_TOKEN }}
+        run: printf 'SUPABASE_DB_PASSWORD=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\nINVITE_REDIRECT_URL=%s\nRESEND_API_KEY=%s\nPOSTMARK_SERVER_TOKEN=%s\n' "$DB_PASSWORD" "$SERVICE_ROLE" "$INVITE_URL" "$RESEND_KEY" "$POSTMARK_KEY" > deploy/env/shared-prod.env
+      - run: npm run deploy:supabase -- --env prod --yes-prod
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

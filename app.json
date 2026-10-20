@@ -2,9 +2,13 @@
   "expo": {
     "name": "Field Service",
     "slug": "field-service",
-    "scheme": "field-service",
+    "version": "1.0.0",
+    "web": {
+      "output": "single"
+    },
     "plugins": [
       "expo-router",
+      "expo-updates",
       [
         "expo-image-picker",
         {

@@ -1,0 +1,16 @@
+[
+  {
+    "name": "shared-dev",
+    "env": "dev",
+    "projectRef": "<SUPABASE_DEV_PROJECT_REF>",
+    "kind": "shared",
+    "envFile": "deploy/env/shared-dev.env"
+  },
+  {
+    "name": "shared-prod",
+    "env": "prod",
+    "projectRef": "<SUPABASE_PROD_PROJECT_REF>",
+    "kind": "shared",
+    "envFile": "deploy/env/shared-prod.env"
+  }
+]

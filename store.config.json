@@ -1,0 +1,27 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "info": {
+      "en-GB": {
+        "title": "Field Service — DRAFT",
+        "subtitle": "Jobs, teams and timesheets — DRAFT",
+        "description": "DRAFT: Field Service gives invited trade and service teams one place to schedule work, keep job records, attach site photos, record extra work and manage timesheets. Owners and managers can see progress across the business while workers get a focused view of their assigned jobs.",
+        "keywords": ["field service", "jobs", "trades", "timesheets", "scheduling"],
+        "marketingUrl": "<MARKETING_URL>",
+        "supportUrl": "<SUPPORT_URL>",
+        "privacyPolicyUrl": "<PRIVACY_URL>"
+      }
+    },
+    "categories": ["BUSINESS"],
+    "copyright": "DRAFT <YEAR> <LEGAL_ENTITY>",
+    "review": {
+      "firstName": "<REVIEW_CONTACT_FIRST_NAME>",
+      "lastName": "<REVIEW_CONTACT_LAST_NAME>",
+      "email": "<REVIEW_CONTACT_EMAIL>",
+      "phone": "<REVIEW_CONTACT_PHONE>",
+      "demoUsername": "<REVIEW_OWNER_EMAIL>",
+      "demoPassword": "<REVIEW_ONE_TIME_PASSWORD>",
+      "notes": "DRAFT: This is an invite-only field-service app. Sign in with the Review business owner account above. The account contains invented jobs, photos and timesheets. No public sign-up is available."
+    }
+  }
+}

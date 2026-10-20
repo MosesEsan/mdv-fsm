@@ -49,7 +49,7 @@ The Mac and phone must be on the same network. Keep Docker, Supabase, and Metro 
 
 ## Seed users
 
-`npm run seed:users` is safe to run repeatedly. The script prints the logins; all use the value of `SEED_PASSWORD`:
+`npm run seed:users` is safe to run repeatedly on local/dev only. Never run either seed against production. The script prints the logins; all use the value of `SEED_PASSWORD`:
 
 - `owner@construction.test`
 - `manager@construction.test`
@@ -74,15 +74,31 @@ Invite emails sent from the admin appear in the local mail inbox at http://local
 ## Verification
 
 - `npm run typecheck` — TypeScript check
-- `npm test` — unit tests (84 expected)
+- `npm test` — unit tests (104 expected)
 - `npm run db:reset` — reset and apply migrations/seed
-- `npm run db:test` — pgTAP database tests (187 expected)
+- `npm run db:test` — pgTAP database tests (229 expected)
 - `npm run test:acceptance` — verify every seed login, Realtime settings propagation, supervisor assignment scope, and tenant isolation (requires local Supabase and seeded users)
 - `npx expo start --lan` — run the Expo Go development server
+
+## Cloud deployment
+
+The complete Supabase, GitHub Actions, Vercel, EAS and store runbook is in `docs/deploy.md`. Account/payment/dashboard work is consolidated in `docs/deploy-checklist.md`.
+
+```bash
+npm run deploy:supabase -- --env dev --dry-run
+npm run build:web
+npm run build:ios:preview
+npm run build:android:preview
+npm run update:preview -- --message "Describe the update"
+```
+
+`CLIENT` is mandatory and selects `clients/<client>/config.ts`. For local work use `CLIENT=shared npx expo start`. Never commit secrets or run production deployment/seed commands without explicit approval. Hosted schema, policies, buckets and Realtime are migration-only.
 
 ## Documentation
 
 - `docs/BUILD-LOG.md` — what has been built, when, and the decisions taken (copy of the project doc `build-log.md`).
+- `docs/deploy.md` — cloud deployment, credentials, builds, store release and rollback.
+- `docs/deploy-checklist.md` — the one ordered checklist for account-holder actions.
 - Architecture: the Claude Doc "Field Service Platform — Architecture" (code layout, security model, modules, data model, how to add a module, known gaps).
 - Plans in the Claude project: `phase-1-plan-flooring.md`, `platform-admin-plan.md`, `settings-and-timesheets-plan.md`, `deployment-options.md`.
 
