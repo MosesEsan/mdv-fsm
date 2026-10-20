@@ -2,7 +2,7 @@
 
 This is the single ordered list of steps that require your accounts, payment, secrets or dashboard approval.
 
-- [ ] Decide `<BUNDLE_ID_PREFIX>`, `<ADMIN_DOMAIN>`, email provider, privacy-policy owner, deletion approach, and which Apple/Google organisation owns the shared app. Paste identifiers into `clients/shared/config.ts`, `eas.json`, store files and this runbook.
+- [ ] Decide `<ADMIN_DOMAIN>`, email provider, privacy-policy owner, deletion approach, and which Apple/Google organisation owns the shared app. The shared app identifier is `ie.mesandigital.fsm` on both iOS and Android.
 - [ ] Create a private GitHub repo: run `gh repo create <GITHUB_ORG>/<REPO_NAME> --private --source . --push` from the repo root.
 - [ ] Supabase Dashboard → New project: create `shared-dev` and `shared-prod`, both in Europe West (Ireland). Production paid plan is recommended for daily backups/no pausing (cost). Paste refs into `deploy/projects.json`.
 - [ ] Copy `deploy/env/.env.example` to `deploy/env/shared-dev.env` and `shared-prod.env`; fill values locally. Do not commit them.
