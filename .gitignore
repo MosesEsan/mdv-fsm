@@ -22,3 +22,5 @@ supabase/.branches/
 supabase/.temp/
 deploy/env/*.env
 _to_delete/
+.vercel
+.env*.local
