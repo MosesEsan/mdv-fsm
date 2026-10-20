@@ -74,9 +74,9 @@ Invite emails sent from the admin appear in the local mail inbox at http://local
 ## Verification
 
 - `npm run typecheck` — TypeScript check
-- `npm test` — unit tests (75 expected)
+- `npm test` — unit tests (80 expected)
 - `npm run db:reset` — reset and apply migrations/seed
-- `npm run db:test` — pgTAP database tests (154 expected)
+- `npm run db:test` — pgTAP database tests (172 expected)
 - `npm run test:acceptance` — verify every seed login, Realtime settings propagation, supervisor assignment scope, and tenant isolation (requires local Supabase and seeded users)
 - `npx expo start --lan` — run the Expo Go development server
 

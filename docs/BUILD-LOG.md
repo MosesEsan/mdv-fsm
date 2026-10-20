@@ -18,13 +18,37 @@ Code lives in `fsm/` (Mac: `~/Documents/Projects/MesanDigitalVentures/projects/m
 | Core: job photos (shrink, upload queue, private storage) | Built | `core_job_files`, `src/core/jobFiles` |
 | Timesheets module | Built (entry, clock, sign-off, reports, CSV/PDF export) | `timesheets_*`, `src/modules/timesheets` |
 | Flooring module: viewings and rooms | Built | `flooring_viewings`, `src/modules/flooring` |
-| Flooring: customers and enquiries | Not built (next) | |
-| Flooring: quote PDF | Not built | |
+| Core: customers (checked, same-business links, search, picker) | Built | `core_customers`, `src/core/customers` |
+| Flooring: enquiries (stages, one-step create) | Built | `flooring_enquiries`, `src/modules/flooring` |
+| Flooring: quote PDF | Not built (next) | |
 | Notifications (push, email) | Not built | |
 
-Tests: 154 pgTAP checks, 75 unit tests, typecheck clean (once the photo packages are installed).
+Tests: 172 pgTAP checks, 80 unit tests, typecheck clean (once the photo packages are installed).
 
 ## Log
+
+### 2026-10-20 — Customers and enquiries (Stage 1, step 1)
+- **Core customers:**
+  - The database tidies names, emails and phones and checks email shape and lengths.
+  - Jobs can link only to a customer of the same business (composite key).
+  - Search by name, email or phone digits.
+  - `CustomerPicker` (find or add) and `CustomerFields` can be reused by any module.
+  - Still owner/manager only; staff see a customer only on the job sheet of a job they're booked on.
+- **Flooring enquiries:**
+  - `fl_enquiries` holds how they got in touch, details, and open or not going ahead with a reason.
+  - `fl_create_enquiry` saves customer, job, enquiry and viewing time in one step. A blank site address means the customer's address.
+  - The view `fl_v_enquiries` works out each stage: new → viewing booked → measured → work booked, or not going ahead.
+- **Screens:**
+  - Enquiries list grouped by stage, with an open/all filter.
+  - New enquiry.
+  - Enquiry detail: call or email, edit the customer, set the viewing time, open the viewing, book the work, mark as not going ahead or reopen.
+- **Scheduling:** the booking form can open with the job already picked ("Book the work").
+- **Decisions (assumptions, to check with the owner):**
+  - A viewing time is stored on the viewing, but it doesn't appear on the schedule yet.
+  - Contact sources are phone, email, website, walk-in, referral, social media and other.
+  - A new customer needs a phone number or an email.
+- **Tests:** 18 new pgTAP checks (`core_customers` 7, `flooring_enquiries` 11), giving 172 in total; 80 unit tests.
+- **Commits:** `feat(customers)`, `feat(scheduling)`, `feat(flooring)`.
 
 ### 2026-10-20 — Version control
 - **Git:** the `fsm` folder is now a git repository on `main`, with 11 commits grouped by area: scaffold, core database, core app shell, settings, dates/files, Timesheets, platform admin, scheduling, job files, flooring, docs.
@@ -82,6 +106,7 @@ Tests: 154 pgTAP checks, 75 unit tests, typecheck clean (once the photo packages
 - **Settings system:** see `settings-and-timesheets-plan.md`.
 
 ## Open questions (for us or the client)
+0. Should viewings show on the schedule (as a booking for the owner), so the diary has everything in it?
 1. Should staff see only jobs they're booked on? This conflicts with Timesheets job picking.
 2. Multi-day bookings and drag-to-move (Stage 2).
 3. Should the floor types offered be a setting each business can change?
@@ -94,8 +119,8 @@ Tests: 154 pgTAP checks, 75 unit tests, typecheck clean (once the photo packages
 npx expo install expo-image-picker expo-image-manipulator   # once
 npx supabase start
 npx supabase db reset            # migrations + seed (Demo Flooring has timesheets, scheduling, flooring on)
-npx supabase test db             # 154 checks
-npm test                         # 75 tests
+npx supabase test db             # 172 checks
+npm test                         # 80 tests
 npm run seed:users               # demo logins incl. owner@flooring.test, fitter@flooring.test, admin@platform.test
 npx supabase functions serve     # ts-export, platform-invite
 npx expo start --lan             # phone; add --web for /admin
