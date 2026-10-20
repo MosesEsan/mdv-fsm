@@ -30,4 +30,4 @@ export function extraDetailLine(e: { hours: number | null; materials: string | n
   return [e.hours != null ? `${e.hours} hr${e.hours === 1 ? '' : 's'}` : null, e.materials].filter(Boolean).join(' · ');
 }
 
-export const openLabel = (n: number) => `${n} extra to invoice`;
+export const openLabel = (n: number) => `${n} extra work to invoice`;

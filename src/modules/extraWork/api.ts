@@ -4,7 +4,7 @@ import { getSupabase } from '@/core/supabase';
 export const EXTRA_WORK = 'extra_work';
 
 export type ExtraEntry = {
-  id: string; jobId: string; jobSummary: string | null; loggedBy: string; loggedByName: string | null;
+  id: string; jobId: string; jobSummary: string | null; customerName: string | null; loggedBy: string; loggedByName: string | null;
   what: string; why: string | null; hours: number | null; materials: string | null;
   createdAt: string; invoicedAt: string | null; fileIds: string[];
 };
@@ -17,16 +17,16 @@ export const xwKeys = {
   counts: ['extra-work', 'counts'] as const,
 };
 
-const SELECT = 'id, job_id, logged_by, what, why, hours, materials, created_at, invoiced_at, jobs(summary), profiles!xw_entries_logged_by_fk(full_name), xw_entry_files(file_id)';
+const SELECT = 'id, job_id, logged_by, what, why, hours, materials, created_at, invoiced_at, jobs(summary, customers(name)), profiles!xw_entries_logged_by_fk(full_name), xw_entry_files(file_id)';
 
 type Row = {
   id: string; job_id: string; logged_by: string; what: string; why: string | null; hours: number | string | null; materials: string | null;
   created_at: string; invoiced_at: string | null;
-  jobs: { summary: string | null } | null; profiles: { full_name: string | null } | null; xw_entry_files: { file_id: string }[] | null;
+  jobs: { summary: string | null; customers: { name: string | null } | null } | null; profiles: { full_name: string | null } | null; xw_entry_files: { file_id: string }[] | null;
 };
 
 const toEntry = (r: Row): ExtraEntry => ({
-  id: r.id, jobId: r.job_id, jobSummary: r.jobs?.summary ?? null, loggedBy: r.logged_by, loggedByName: r.profiles?.full_name ?? null,
+  id: r.id, jobId: r.job_id, jobSummary: r.jobs?.summary ?? null, customerName: r.jobs?.customers?.name ?? null, loggedBy: r.logged_by, loggedByName: r.profiles?.full_name ?? null,
   what: r.what, why: r.why, hours: r.hours == null ? null : Number(r.hours), materials: r.materials,
   createdAt: r.created_at, invoicedAt: r.invoiced_at, fileIds: (r.xw_entry_files ?? []).map((f) => f.file_id),
 });

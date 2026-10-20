@@ -1,32 +1,28 @@
-import { Pressable, Text, View } from 'react-native';
+import { Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { firstName, useJobContext, whenLabel } from '@/core/jobRecords';
 import type { JobSectionProps } from '@/core/jobs/sections';
-import { Button, Card, ErrorText, Heading, Loading, Muted, colors, styles } from '@/core/ui';
+import { Card, ErrorText, styles } from '@/core/ui';
+import { ListRow, Pill, SectionLabel } from '@/core/ui/kit';
 import { useJobExtraEntries } from '../hooks';
-import { extraDetailLine } from '../rules';
 
-/** On a job page: extra work logged on this job, and a button to log more. */
-export function ExtraWorkSection({ jobId, canEdit }: JobSectionProps) {
+/** On a job page: extra work logged on this job, each with whether it's on an invoice yet. */
+export function ExtraWorkSection({ jobId }: JobSectionProps) {
   const router = useRouter();
+  const { tz, today } = useJobContext();
   const entries = useJobExtraEntries(jobId);
   const list = entries.data ?? [];
-  const open = list.filter((e) => !e.invoicedAt).length;
   return (
     <Card>
-      <Heading>{`Extra work${open ? ` · ${open} to invoice` : ''}`}</Heading>
-      {entries.isLoading ? <Loading /> : null}
+      <SectionLabel>{`Extra work · ${list.length}`}</SectionLabel>
       <ErrorText error={entries.error} />
-      {!entries.isLoading && list.length === 0 ? <Muted>Anything not in the original job: log it here so it gets invoiced.</Muted> : null}
+      {!entries.isLoading && list.length === 0 ? <Text style={styles.muted}>Anything done that wasn’t in the instructions goes here, so it gets charged.</Text> : null}
       {list.map((e) => (
-        <Pressable key={e.id} accessibilityRole="button" onPress={() => router.push({ pathname: '/extra-work/[entryId]', params: { entryId: e.id } })}
-          style={{ paddingTop: 8, borderTopWidth: 1, borderColor: colors.border, gap: 2 }}>
-          <Text style={styles.label}>{e.what}</Text>
-          <Muted>{[extraDetailLine(e), e.invoicedAt ? 'Added to invoice' : 'Not invoiced yet'].filter(Boolean).join(' · ')}</Muted>
-        </Pressable>
+        <ListRow key={e.id} title={e.what} onPress={() => router.push({ pathname: '/extra-work/[entryId]', params: { entryId: e.id } })}
+          lines={[`${firstName(e.loggedByName)} · ${whenLabel(e.createdAt, tz, today)}${e.hours != null ? ` · about ${e.hours} h` : ''}`]}>
+          {e.invoicedAt ? <Pill label="Added to invoice" tone="green" icon="checkmark" /> : <Pill label="Not on an invoice yet" tone="red" icon="flag" />}
+        </ListRow>
       ))}
-      {canEdit ? (
-        <View><Button title="Log extra work" variant="secondary" onPress={() => router.push({ pathname: '/extra-work/new', params: { jobId } })} /></View>
-      ) : null}
     </Card>
   );
 }

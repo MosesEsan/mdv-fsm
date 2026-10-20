@@ -1,14 +1,16 @@
 // Extra work: things done on a job that weren't in the original job, logged so they get invoiced.
 // Switched on with tenants.features.extra_work. Plugs into job records; core never imports this.
 import { registerUploadHook } from '@/core/jobFiles';
-import { registerJobListAddon, registerJobSection, type JobRowTag } from '@/core/jobs/sections';
+import { registerJobAction, registerJobListAddon, registerJobSection, type JobRowTag } from '@/core/jobs/sections';
+import { isManagerRole } from '@/core/auth/claims';
+import { useAuthClaims } from '@/core/auth/useAuthClaims';
 import { registerModule } from '@/core/modules/registry';
 import { EXTRA_WORK, linkEntryFile } from './api';
 import { ExtraWorkBanner } from './components/ExtraWorkBanner';
 import { ExtraWorkSection } from './components/ExtraWorkSection';
+import { useOpenExtraCount } from './home';
 import { useOpenCounts } from './hooks';
 import { openLabel } from './rules';
-import { useOpenExtraCount } from './home';
 
 registerModule({
   id: EXTRA_WORK,
@@ -28,8 +30,13 @@ registerJobListAddon({
   id: EXTRA_WORK,
   feature: EXTRA_WORK,
   Banner: ExtraWorkBanner,
+  // Only the owner and manager see the red tags (the people on site don't invoice).
   useRowTags: () => {
+    const isManager = isManagerRole(useAuthClaims()?.role);
     const counts = useOpenCounts().data ?? {};
-    return Object.fromEntries(Object.entries(counts).map(([jobId, n]): [string, JobRowTag[]] => [jobId, [{ label: openLabel(n), tone: 'warning' }]]));
+    if (!isManager) return {};
+    return Object.fromEntries(Object.entries(counts).map(([jobId, n]): [string, JobRowTag[]] => [jobId, [{ label: openLabel(n), tone: 'danger' }]]));
   },
 });
+
+registerJobAction({ id: EXTRA_WORK, feature: EXTRA_WORK, label: 'Log extra work', icon: 'flag', variant: 'accent', href: (jobId) => `/extra-work/new?jobId=${jobId}` });
