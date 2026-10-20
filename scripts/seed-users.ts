@@ -27,7 +27,7 @@ const USERS: SeedUser[] = [
   { key: 'c-worker2', tenant: TENANTS.construction, role: 'worker', email: 'worker2@construction.test', name: 'Construction Worker 2' },
   { key: 'f-owner', tenant: TENANTS.flooring, role: 'owner', email: 'owner@flooring.test', name: 'Flooring Owner' },
   { key: 'f-fitter', tenant: TENANTS.flooring, role: 'fitter', email: 'fitter@flooring.test', name: 'Flooring Fitter' },
-  { key: 'p-owner', tenant: TENANTS.property, role: 'owner', email: 'owner@property.test', name: 'Paul Walsh' },
+  { key: 'p-owner', tenant: TENANTS.property, role: 'owner', email: 'owner@property.test', name: 'Arnis Gelsons' },
   { key: 'p-manager', tenant: TENANTS.property, role: 'manager', email: 'manager@property.test', name: 'Gary Nolan' },
   { key: 'p-adam', tenant: TENANTS.property, role: 'worker', email: 'adam@property.test', name: 'Adam Byrne' },
   { key: 'p-kasia', tenant: TENANTS.property, role: 'worker', email: 'kasia@property.test', name: 'Kasia Nowak' },
@@ -43,7 +43,7 @@ const PROPERTY_PEOPLE: Record<number, string[]> = {
 const PROPERTY_UPDATES: { id: string; job: number; by: string; at: string; body: string }[] = [
   { id: '00000000-0000-0000-0003-000000000101', job: 1, by: 'p-adam', at: '2026-10-13T16:40:00+01:00', body: 'Stripped out the old bath, tiles and vanity. Skip collected at 4.' },
   { id: '00000000-0000-0000-0003-000000000102', job: 1, by: 'p-kasia', at: '2026-10-15T15:55:00+01:00', body: 'New shower tray in and first fix plumbing done. Gary checked the falls.' },
-  { id: '00000000-0000-0000-0003-000000000103', job: 1, by: 'p-manager', at: '2026-10-16T09:10:00+01:00', body: 'Checked the floor with Paul. Customer happy with the layout. Tiling starts Monday.' },
+  { id: '00000000-0000-0000-0003-000000000103', job: 1, by: 'p-manager', at: '2026-10-16T09:10:00+01:00', body: 'Checked the floor with Arnis. Customer happy with the layout. Tiling starts Monday.' },
   { id: '00000000-0000-0000-0003-000000000104', job: 1, by: 'p-adam', at: '2026-10-19T17:20:00+01:00', body: 'Walls tiled to two thirds. Floor tiles tomorrow.' },
   { id: '00000000-0000-0000-0003-000000000105', job: 3, by: 'p-kasia', at: '2026-10-19T16:30:00+01:00', body: 'Crack filled and sanded. First coat on the hall.' },
   { id: '00000000-0000-0000-0003-000000000106', job: 5, by: 'p-adam', at: '2026-07-22T17:00:00+01:00', body: 'Strip-out done.' },
@@ -174,6 +174,16 @@ async function main() {
     }
   }
 
+  // Demo business logo (AG Property Maintenance): branding/{tenant}/logo/ag-logo.png, then point the branding at it.
+  const logoPath = `${TENANTS.property}/logo/ag-logo.png`;
+  const { error: logoError } = await supabase.storage.from('branding')
+    .upload(logoPath, readFileSync(join(process.cwd(), 'scripts', 'demo-branding', 'ag-logo.png')), { contentType: 'image/png', upsert: true });
+  if (logoError) throw logoError;
+  const { error: brandError } = await supabase.from('tenants').update({
+    branding: { colors: { primary: '#1973B3', accent: '#13406C' }, pdfName: 'AG Property Maintenance', logoPath },
+  }).eq('id', TENANTS.property);
+  if (brandError) throw brandError;
+
   // Platform team login: belongs to no business, opens /admin (web).
   const adminId = await findOrCreate('admin@platform.test');
   const { error: adminError } = await supabase.from('platform_admins').upsert({ user_id: adminId, note: 'local seed' }, { onConflict: 'user_id' });
@@ -183,7 +193,7 @@ async function main() {
   console.log(`  ${'admin@platform.test'.padEnd(30)} platform admin (web: /admin)`);
   for (const u of USERS) console.log(`  ${u.email.padEnd(30)} ${u.role}`);
   console.log('  supervisor@construction.test signs off worker1 only.');
-  console.log('  property.test: Demo Property Care (job records and extra work). 23 demo photos from scripts/demo-photos.');
+  console.log('  property.test: AG Property Maintenance (job records and extra work). 23 demo photos from scripts/demo-photos.');
 }
 
 main().catch((e) => {

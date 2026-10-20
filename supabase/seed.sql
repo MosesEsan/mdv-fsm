@@ -17,9 +17,9 @@ on conflict (id) do nothing;
 -- Demo property maintenance business: job records and extra work on. Invented customers.
 -- People, who's on each job, updates and extra work come from scripts/seed-users.ts (they need logins).
 insert into public.tenants (id, name, features, branding)
-values ('00000000-0000-0000-0000-000000000003', 'Demo Property Care', '{"job_records": true, "extra_work": true}',
-        '{"colors": {"primary": "#24527A", "accent": "#B4432A"}, "pdfName": "Demo Property Care"}')
-on conflict (id) do update set name = excluded.name, features = excluded.features;
+values ('00000000-0000-0000-0000-000000000003', 'AG Property Maintenance', '{"job_records": true, "extra_work": true}',
+        '{"colors": {"primary": "#1973B3", "accent": "#13406C"}, "pdfName": "AG Property Maintenance"}')
+on conflict (id) do update set name = excluded.name, features = excluded.features, branding = excluded.branding;
 
 insert into public.customers (id, tenant_id, name, phone, address)
 values
