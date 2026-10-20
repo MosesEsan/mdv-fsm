@@ -1,0 +1,25 @@
+create schema if not exists private;
+create table public.tenants (id uuid primary key default gen_random_uuid(), name text not null, branding jsonb not null default '{}', features jsonb not null default '{}', created_at timestamptz not null default now());
+create table public.profiles (id uuid primary key references auth.users(id) on delete cascade, tenant_id uuid not null references public.tenants(id), full_name text, phone text, role text not null check (role in ('owner','manager','supervisor','fitter','worker')), active boolean not null default true, created_at timestamptz not null default now());
+create index profiles_tenant_id_idx on public.profiles(tenant_id);
+create table public.customers (id uuid primary key default gen_random_uuid(), tenant_id uuid not null references public.tenants(id), name text not null, phone text, email text, address text, created_at timestamptz not null default now());
+create index customers_tenant_id_idx on public.customers(tenant_id);
+create table public.jobs (id uuid primary key default gen_random_uuid(), tenant_id uuid not null references public.tenants(id), customer_id uuid references public.customers(id), status text not null default 'enquiry', summary text, site_address text, created_at timestamptz not null default now());
+create index jobs_tenant_created_idx on public.jobs(tenant_id, created_at desc);
+create or replace function private.current_tenant_id() returns uuid language sql stable security definer set search_path='' as $$ select nullif((select auth.jwt()->>'tenant_id'),'')::uuid $$;
+create or replace function private.app_role() returns text language sql stable security definer set search_path='' as $$ select auth.jwt()->>'app_role' $$;
+create or replace function private.is_owner() returns boolean language sql stable security definer set search_path='' as $$ select private.app_role()='owner' $$;
+create or replace function private.is_manager() returns boolean language sql stable security definer set search_path='' as $$ select private.app_role() in ('owner','manager') $$;
+alter table public.tenants enable row level security; alter table public.profiles enable row level security; alter table public.customers enable row level security; alter table public.jobs enable row level security;
+create policy tenants_member_select on public.tenants for select using (id=(select private.current_tenant_id()));
+create policy tenants_owner_update on public.tenants for update using (id=(select private.current_tenant_id()) and (select private.is_owner())) with check (id=(select private.current_tenant_id()));
+create policy profiles_member_select on public.profiles for select using (tenant_id=(select private.current_tenant_id()));
+create policy profiles_self_update on public.profiles for update using (id=auth.uid()) with check (id=auth.uid());
+create policy customers_manager_all on public.customers for all using (tenant_id=(select private.current_tenant_id()) and (select private.is_manager())) with check (tenant_id=(select private.current_tenant_id()));
+create policy jobs_manager_all on public.jobs for all using (tenant_id=(select private.current_tenant_id()) and (select private.is_manager())) with check (tenant_id=(select private.current_tenant_id()));
+-- TEMPORARY: restrict to assigned jobs once bookings exist
+create policy jobs_member_select on public.jobs for select using (tenant_id=(select private.current_tenant_id()));
+create or replace function public.custom_access_token_hook(event jsonb) returns jsonb language plpgsql security definer set search_path='' as $$ declare p record; claims jsonb := coalesce(event->'claims','{}'::jsonb); begin select tenant_id, role into p from public.profiles where id=(event->>'user_id')::uuid and active; if found then claims := jsonb_set(jsonb_set(claims,'{tenant_id}',to_jsonb(p.tenant_id::text),true),'{app_role}',to_jsonb(p.role),true); end if; return jsonb_set(event,'{claims}',claims,true); end $$;
+grant execute on function public.custom_access_token_hook(jsonb) to supabase_auth_admin; revoke execute on function public.custom_access_token_hook(jsonb) from authenticated, anon, public;
+grant select on public.profiles to supabase_auth_admin;
+create policy profiles_auth_hook_select on public.profiles for select to supabase_auth_admin using (true);

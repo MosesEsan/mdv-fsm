@@ -1,0 +1,10 @@
+project_id = "fsm-platform"
+
+[auth]
+# Local Expo web build. Invite emails link here, then the app opens /set-password.
+site_url = "http://localhost:8081"
+additional_redirect_urls = ["http://localhost:8081/set-password"]
+
+[auth.hook.custom_access_token]
+enabled = true
+uri = "pg-functions://postgres/public/custom_access_token_hook"
