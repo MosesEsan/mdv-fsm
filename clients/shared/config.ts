@@ -1,5 +1,5 @@
 export const config = {
-  appName: 'Field Service',
+  appName: 'Jobsite',
   slug: 'field-service',
   scheme: 'field-service',
   iosBundleId: 'ie.mesandigital.fsm',

@@ -10,6 +10,7 @@ import { AuthProvider, useSession } from '@/core/auth/AuthProvider';
 import { useTenantSettingsSync } from '@/core/settings/useTenantSettingsSync';
 import { BrandTheme } from '@/core/branding';
 import { useUploadQueueRunner } from '@/core/jobFiles';
+import { isPublicRoute } from '@/core/auth/routeAccess';
 
 const extra = Constants.expoConfig?.extra ?? {};
 setSupabaseClient(createAppSupabaseClient({
@@ -53,7 +54,7 @@ function Guard() {
   const stack = <Stack screenOptions={{ headerShown: false }} />;
 
   if (authError) return <Message text={authError} onSignOut={signOut} />;
-  if (!session) return area === '(auth)' ? stack : <Redirect href="/(auth)/login" />;
+  if (!session) return area === '(auth)' || isPublicRoute(segments) ? stack : <Redirect href="/(auth)/login" />;
   if (area === '(auth)' && page === 'set-password') return stack; // invite links land here signed in
   if (area === 'admin') return isPlatformAdmin ? stack : <Redirect href="/" />;
   if (!claims) {
