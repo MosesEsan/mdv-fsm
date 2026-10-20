@@ -4,13 +4,14 @@ import { CustomerFields, toInput, customerProblems, customerValues, useCustomer,
 import { formatDay, isValidTime, localDate, localTime, zonedInstant } from '@/core/dates';
 import { useTenantSettings } from '@/core/settings/useTenantSettings';
 import { Button, Card, ErrorText, Heading, Loading, Muted, Screen, TextField, styles } from '@/core/ui';
+import { QuotesCard } from '../components/QuotesCard';
 import { useEnquiry, useEnquiryMutations } from '../enquiryHooks';
 import { sourceLabel, stageLabel } from '../enquiryRules';
 
-type Props = { jobId: string; onOpenViewing: () => void; onBookWork: () => void };
+type Props = { jobId: string; onOpenViewing: () => void; onBookWork: () => void; onOpenQuote: (quoteId: string | null) => void };
 
 /** One enquiry: the customer, what they want, the viewing time, and what to do next. */
-export function EnquiryScreen({ jobId, onOpenViewing, onBookWork }: Props) {
+export function EnquiryScreen({ jobId, onOpenViewing, onBookWork, onOpenQuote }: Props) {
   const tz = useTenantSettings().timezone ?? 'Europe/Dublin';
   const q = useEnquiry(jobId);
   const e = q.data;
@@ -82,6 +83,8 @@ export function EnquiryScreen({ jobId, onOpenViewing, onBookWork }: Props) {
           onPress={() => m.viewingTime.mutate(viewing.date ? zonedInstant(viewing.date, viewing.time || '10:00', tz) : null)} />
         <Button title={e.room_count > 0 ? `Open viewing (${e.room_count} room${e.room_count === 1 ? '' : 's'})` : 'Start the viewing'} onPress={onOpenViewing} />
       </Card>
+
+      <QuotesCard jobId={jobId} onOpen={onOpenQuote} />
 
       <Card>
         <Heading>Next</Heading>

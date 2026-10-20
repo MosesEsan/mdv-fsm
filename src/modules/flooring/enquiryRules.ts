@@ -14,6 +14,7 @@ export const STAGES = [
   ['new', 'New – arrange a viewing'],
   ['viewing_booked', 'Viewing booked'],
   ['measured', 'Measured – ready to quote'],
+  ['quoted', 'Quoted – waiting to hear back'],
   ['booked', 'Work booked'],
   ['lost', 'Not going ahead'],
 ] as const;

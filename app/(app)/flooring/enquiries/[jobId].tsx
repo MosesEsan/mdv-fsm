@@ -11,6 +11,7 @@ export default function EnquiryRoute() {
       jobId={id}
       onOpenViewing={() => router.push({ pathname: '/flooring/viewings/[jobId]', params: { jobId: id } })}
       onBookWork={() => router.push({ pathname: '/schedule/edit/[bookingId]', params: { bookingId: 'new', jobId: id, date: '' } })}
+      onOpenQuote={(quoteId) => router.push({ pathname: '/flooring/quotes/[quoteId]', params: { quoteId: quoteId ?? 'new', jobId: id } })}
     />
   );
 }

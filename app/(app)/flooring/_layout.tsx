@@ -9,6 +9,8 @@ export default function FlooringLayout() {
         <Stack.Screen name="enquiries/index" options={{ title: 'Enquiries' }} />
         <Stack.Screen name="enquiries/new" options={{ title: 'New enquiry' }} />
         <Stack.Screen name="enquiries/[jobId]" options={{ title: 'Enquiry' }} />
+        <Stack.Screen name="quotes/[quoteId]" options={{ title: 'Quote' }} />
+        <Stack.Screen name="prices" options={{ title: 'Prices' }} />
         <Stack.Screen name="viewings/index" options={{ title: 'Viewings' }} />
         <Stack.Screen name="viewings/[jobId]" options={{ title: 'Viewing' }} />
       </Stack>
