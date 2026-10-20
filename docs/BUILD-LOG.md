@@ -26,6 +26,12 @@ Tests: 154 pgTAP checks, 75 unit tests, typecheck clean (once the photo packages
 
 ## Log
 
+### 2026-10-20 — Version control
+- **Git:** the `fsm` folder is now a git repository on `main`, with 11 commits grouped by area: scaffold, core database, core app shell, settings, dates/files, Timesheets, platform admin, scheduling, job files, flooring, docs.
+- **Not tracked:** `.env`, `node_modules`, `.expo`, `expo-env.d.ts` and Supabase CLI state are ignored.
+- **Known limit:** the commits group the current code by area; they are not a replay of the history. Earlier commits on their own may not build, because the app shell already imports later features.
+- **No remote yet:** create a private GitHub repo and push.
+
 ### 2026-10-20 — Documentation pass and a test fix
 - **Docs brought up to date:**
   - The architecture doc now covers the code layout, data model, server-side pieces, test counts, local setup, the module how-to and known gaps.
