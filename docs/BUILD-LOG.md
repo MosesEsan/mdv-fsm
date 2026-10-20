@@ -20,12 +20,37 @@ Code lives in `fsm/` (Mac: `~/Documents/Projects/MesanDigitalVentures/projects/m
 | Flooring module: viewings and rooms | Built | `flooring_viewings`, `src/modules/flooring` |
 | Core: customers (checked, same-business links, search, picker) | Built | `core_customers`, `src/core/customers` |
 | Flooring: enquiries (stages, one-step create) | Built | `flooring_enquiries`, `src/modules/flooring` |
-| Flooring: quote PDF | Not built (next) | |
+| Flooring: quotes, price list, quote PDF sharing | Built (owner only) | `flooring_quotes`, `src/modules/flooring` |
 | Notifications (push, email) | Not built | |
 
-Tests: 172 pgTAP checks, 80 unit tests, typecheck clean (once the photo packages are installed).
+Tests: 187 pgTAP checks, 84 unit tests, typecheck clean (once the photo packages are installed).
 
 ## Log
+
+### 2026-10-20 — Quotes (Stage 1, step 3: Stage 1 is now complete)
+- **Database (owner only):**
+  - `fl_price_items` (price list: floors, extras, labour; per m², each, hour or metre).
+  - `fl_quote_profile` (phone, email, address, VAT number, terms, usual VAT, days valid).
+  - `fl_quotes`, numbered 1, 2, 3 per business, with status draft / sent / accepted / declined.
+  - `fl_quote_lines`, with each line's total worked out by the database.
+  - The view `fl_v_quotes` gives subtotal, VAT and total.
+  - A sent quote can't be changed; "Make a new version" copies it into a new draft (`fl_copy_quote`).
+  - Managers and fitters can't read any of it, and the tests check this.
+- **Enquiry stage:** a new stage, "Quoted – waiting to hear back". Managers see the stage but never the amounts (`private.fl_job_quoted`).
+- **App:**
+  - The quote starts with one line per measured room, priced from the price-list floor with the same name. You can add extras, labour or free lines.
+  - VAT choice (none, 13.5%, 23%), a valid-until date, notes, and live totals.
+  - "Make PDF and share" builds a branded A4 quote on the phone (logo, colour, business details, terms). It saves the PDF on the job as an owner-only file, opens the share sheet (WhatsApp, email) and marks the quote as sent.
+  - After that: "Customer accepted" or "Customer declined", "Open saved PDF", or "Make a new version".
+  - A Prices screen holds the price list and the details printed on every quote.
+- **Core:** `uploadJobDocument` and `openJobFile`, for documents uploaded straight away rather than queued.
+- **Packages needed:** `npx expo install expo-print expo-sharing`, then commit the `package.json` change.
+- **Decisions (assumptions, to check with the owner):**
+  - VAT is chosen per quote, defaulting to the owner's usual setting. Invoices are still out of scope.
+  - Only the owner, not a manager, sees prices and quotes, as the project rules say.
+  - On the web, "Make PDF" opens the print dialog instead of saving the file.
+- **Tests:** 15 new pgTAP checks (`flooring_quotes`), giving 187 in total; 84 unit tests.
+- **Commits:** `feat(job-files)`, `feat(flooring)` (database), `feat(flooring)` (app).
 
 ### 2026-10-20 — Customers and enquiries (Stage 1, step 1)
 - **Core customers:**
@@ -106,6 +131,8 @@ Tests: 172 pgTAP checks, 80 unit tests, typecheck clean (once the photo packages
 - **Settings system:** see `settings-and-timesheets-plan.md`.
 
 ## Open questions (for us or the client)
+- VAT on quotes: is he VAT registered, and which rate applies (13.5% for supply and fit, or 23%)? Does he need invoices?
+- Should a manager ever see prices or quotes? Today only the owner can.
 0. Should viewings show on the schedule (as a booking for the owner), so the diary has everything in it?
 1. Should staff see only jobs they're booked on? This conflicts with Timesheets job picking.
 2. Multi-day bookings and drag-to-move (Stage 2).
@@ -116,11 +143,11 @@ Tests: 172 pgTAP checks, 80 unit tests, typecheck clean (once the photo packages
 
 ## Running it locally (Mac)
 ```
-npx expo install expo-image-picker expo-image-manipulator   # once
+npx expo install expo-image-picker expo-image-manipulator expo-print expo-sharing   # once
 npx supabase start
 npx supabase db reset            # migrations + seed (Demo Flooring has timesheets, scheduling, flooring on)
-npx supabase test db             # 172 checks
-npm test                         # 80 tests
+npx supabase test db             # 187 checks
+npm test                         # 84 tests
 npm run seed:users               # demo logins incl. owner@flooring.test, fitter@flooring.test, admin@platform.test
 npx supabase functions serve     # ts-export, platform-invite
 npx expo start --lan             # phone; add --web for /admin

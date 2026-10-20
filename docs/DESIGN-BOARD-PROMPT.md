@@ -1,6 +1,6 @@
 # Prompt: app design board
 
-Paste everything in the box into a new chat to start the design board. It describes the app as built on 2026-10-20. Update the screen list when new screens land.
+Paste everything in the box into a new chat to start the design board. It describes the app as built on 2026-10-20 (Stage 1 complete). Update the screen list when new screens land.
 
 ```
 Create a design board (a visual design, not code) for a field-service job-management app. Lay out every screen below as a frame, grouped by who uses it and on which device. Add a small component sheet and the main flows as arrows between frames. Use invented sample data only: no real company or person names.
@@ -29,7 +29,7 @@ Create a design board (a visual design, not code) for a field-service job-manage
 - Business logo, business name, the person's job title; then one tile per feature they can use (title + one-line description); Settings; Sign out. Show the owner's version and the fitter's version.
 
 ### Enquiries (owner)
-- Enquiries list grouped by stage, with counts: New (arrange a viewing) · Viewing booked · Measured (ready to quote) · Work booked · Not going ahead. Each row shows the customer, what they want, phone, address, how they got in touch and when, plus the viewing and work dates if set. Filter: Open / All. "New enquiry" button.
+- Enquiries list grouped by stage, with counts: New (arrange a viewing) · Viewing booked · Measured (ready to quote) · Quoted (waiting to hear back) · Work booked · Not going ahead. Each row shows the customer, what they want, phone, address, how they got in touch and when, plus the viewing and work dates if set. Filter: Open / All. "New enquiry" button.
 - New enquiry: (1) Customer: search by name, phone or email with results, or "New customer" (name, phone, email, address, notes). (2) What they want, site address ("blank = customer's address"), how they got in touch as chips (Phone call, Email, Website, Walk-in, Referral, Social media, Other), details. (3) Viewing date and time (optional). Problems listed in plain English above the Save button.
 - Enquiry detail: summary with stage and source; customer card with Call, Email and Edit; viewing time with "Start the viewing" or "Open viewing (3 rooms)"; Next: "Book the work", "Not going ahead" (with optional reason) or "Reopen".
 
@@ -59,15 +59,18 @@ Create a design board (a visual design, not code) for a field-service job-manage
 - Businesses list: each with people count, owners, time zone, modules on; red "No owner yet" warning; "Add a business" form.
 - Business detail with tabs as chips: Details (name, time zone, ID) · Branding (logo upload, main and accent colour fields showing their contrast ratio, live preview of a button and chips in those colours, name on documents, contrast warnings) · Job titles (one field per role, blank = standard title) · Modules (on/off switch per module, then that module's settings) · People (list with role, email, "Invited 19 Oct, not signed in yet" / "Last signed in…", Change role, Deactivate; Invite someone form) · History (who changed what, when).
 
-### Coming next (design ahead, owner only)
-- Quote builder: line items from the measured rooms (room, floor type, m², price per m², extras such as underlay, door bars, removal, labour), subtotal, VAT, total; preview of a branded A4 quote PDF; Share (WhatsApp / email). Mark clearly as owner-only.
+### Quotes (owner only: managers and fitters never see these)
+- Quotes card on the enquiry: "Quote 3 · Sent · €786.38", number of lines, valid until; "Start a quote".
+- Quote screen: heading "Quote 3 · Draft"; lines (description, quantity, price €, unit chips m² / each / hour / metre, line amount, Remove); "Add a line"; price-list chips ("Engineered oak €45.50") to add a line; VAT chips (No VAT, 13.5%, 23%); valid until; notes; subtotal, VAT and a large total; "Save draft", "Make PDF and share"; once sent: locked note, "Share the PDF again", "Open saved PDF", "Customer accepted" / "Customer declined", "Make a new version".
+- The A4 quote PDF itself: logo, business name in the brand colour, address, phone, email, VAT number; Quote no., date, valid until; For (customer) and Job (summary, site); line table (description, quantity, price, amount); subtotal, VAT, total; notes; terms at the bottom.
+- Prices screen: price lists grouped as Floors / Extras / Labour ("Engineered oak · €45.50 per m²", items not in use faded); add/edit form (name, price, per m² / each / hour / metre, In use switch); "On every quote" card (phone, email, address, VAT number, usual VAT, days valid, terms).
 
 ## States to show
 - Empty (first use), loading, an error message in plain English, a saving button, and offline photo uploads waiting.
 - Phone (≈390 × 844), tablet landscape (≈1180 × 820) for the owner's Enquiries, Viewing and Schedule, and desktop for the admin.
 
 ## What I want back
-1. The board: frames grouped as Sign in · Owner (tablet) · Owner (phone) · Fitter (phone) · Admin (web) · Coming next.
+1. The board: frames grouped as Sign in · Owner (tablet) · Owner (phone) · Quotes (owner) · Fitter (phone) · Admin (web).
 2. A component sheet: Button (main, secondary, danger, busy, disabled), Chip (selected, not selected, disabled), Text field (with hint and error), Card, list row, photo tile (uploaded / waiting), stage badge, clash warning, empty state.
 3. Flow arrows for: enquiry → viewing → book the work → fitter's job sheet; and admin invite → set password → home.
 4. A short list of design decisions and open questions (for example, should viewings appear on the schedule?).
