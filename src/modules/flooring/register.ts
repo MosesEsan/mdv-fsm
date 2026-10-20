@@ -9,6 +9,7 @@ registerModule({
   feature: FLOORING,
   title: 'Flooring',
   nav: [
+    { path: '/flooring/enquiries', title: 'Enquiries', description: 'Calls and messages, viewings and what to do next', roles: ['owner', 'manager'], order: 4 },
     { path: '/flooring/viewings', title: 'Viewings', description: 'Measure up rooms and take photos', roles: ['owner', 'manager'], order: 5 },
   ],
 });
