@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Field Service",
+    "slug": "field-service",
+    "scheme": "field-service",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "The camera is used to take photos of jobs.",
+          "photosPermission": "Your photos are used to attach pictures to jobs.",
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
