@@ -160,7 +160,7 @@ Invite emails: http://localhost:54324.
 - Job records and extra work screens rebuilt to the board; job-records businesses open on the jobs list; Edit details; photo source choice.
 - AG Property Maintenance demo business: name, logo, colours, owner Arnis Gelsons, 23 demo photos (`scripts/demo-photos`).
 - Flows board sources moved into the repo (`design/flows-board/`), with job records merged into the main board.
-- `docs/HANDOVER.md` and `CLAUDE.md` for new sessions; `scripts/db-harness/` runs database tests without Docker.
+- `docs/design-development/HANDOVER.md` and `CLAUDE.md` for new sessions; `scripts/db-harness/` runs database tests without Docker.
 - Not yet run on a phone; hosted dev Supabase not yet deployed.
 
 ### 2026-10-21 — Tabs, Customers, Settings

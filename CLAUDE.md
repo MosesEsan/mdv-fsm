@@ -2,9 +2,9 @@
 
 Start every session by reading, in order:
 
-1. `docs/HANDOVER.md` — what the product is, the clients (AG Property Maintenance is the main focus), code map, how to work, what's next.
+1. `docs/design-development/HANDOVER.md` — what the product is, the clients (AG Property Maintenance is the main focus), code map, how to work, what's next.
 2. `AGENTS.md` — repo workflow and cloud commands.
-3. `docs/BUILD-LOG.md` — what was built, in order.
+3. `docs/design-development/BUILD-LOG.md` — what was built, in order.
 
 Rules that always apply:
 
@@ -14,5 +14,5 @@ Rules that always apply:
 - The `viewer` role is read only: every new business table needs the `zz_block_viewer_writes` trigger (see `20261021110000_core_viewer_role.sql`); `core_viewer_role.test.sql` fails until it has one.
 - Never commit env files or keys. Never run seed scripts against production. Production Supabase deploys need explicit approval and `--yes-prod`.
 - Before committing: typecheck, `npm test`, database tests. Conventional Commits.
-- Keep `docs/BUILD-LOG.md`, `docs/HANDOVER.md` and the flows board (`design/flows-board/`) in step with the code.
+- Keep `docs/design-development/BUILD-LOG.md`, `docs/design-development/HANDOVER.md` and the flows board (`design/flows-board/`) in step with the code.
 - Client-facing text in plain English, no jargon. Lead with the answer.

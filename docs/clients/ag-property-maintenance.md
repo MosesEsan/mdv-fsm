@@ -74,7 +74,7 @@ Do this on the hosted project only, with approval. Never run the seed scripts th
 1. Platform admin (web `/admin`): add the business "AG Property Maintenance".
 2. Switch on Job records and Extra work, upload the logo and set the colours (both must pass the contrast check).
 3. Invite Arnis as Owner. He then invites his team from Team on his phone.
-4. Builds: see `docs/mobile-store-deployment.md`.
+4. Builds: see `docs/deployment/mobile-store-deployment.md`.
 
 ## 7. Open questions
 

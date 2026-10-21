@@ -26,7 +26,7 @@ The project already has:
 - store build scripts in `package.json`;
 - automatic remote build-number/version-code management with `appVersionSource: remote` and `autoIncrement: true`;
 - stable iOS and Android identifiers;
-- draft privacy, data-safety, listing, screenshot and legal notes under `docs/store/`.
+- draft privacy, data-safety, listing, screenshot and legal notes under `docs/deployment/store/`.
 
 The following must be completed before the first store build:
 
@@ -37,7 +37,7 @@ The following must be completed before the first store build:
 - [ ] Confirm the final product name is available and replace the working title if necessary.
 - [ ] Enrol the owning legal organisation in the Apple Developer Program and Google Play Console.
 - [ ] Create the App Store Connect and Play Console app records.
-- [ ] Replace every placeholder in `eas.json`, `store.config.json`, and `docs/store/`.
+- [ ] Replace every placeholder in `eas.json`, `store.config.json`, and `docs/deployment/store/`.
 - [ ] Publish privacy, support, terms and account-deletion URLs.
 - [ ] Prepare an invented store-review tenant and credentials. Never expose the normal demo seed password or real customer data to reviewers.
 - [ ] Capture final store screenshots using invented data.

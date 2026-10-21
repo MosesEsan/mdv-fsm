@@ -82,7 +82,7 @@ Invite emails sent from the admin appear in the local mail inbox at http://local
 
 ## Cloud deployment
 
-The complete Supabase, GitHub Actions, Vercel, EAS and store runbook is in `docs/deploy.md`. Account/payment/dashboard work is consolidated in `docs/deploy-checklist.md`.
+The complete Supabase, GitHub Actions, Vercel, EAS and store runbook is in `docs/deployment/deploy.md`. Account/payment/dashboard work is consolidated in `docs/deployment/deploy-checklist.md`.
 
 ```bash
 npm run deploy:supabase -- --env dev --dry-run
@@ -97,9 +97,9 @@ npm run update:preview -- --message "Describe the update"
 ## Documentation
 
 - `docs/clients/*.md` — per-business setup, seeding and role testing.
-- `docs/BUILD-LOG.md` — what has been built, when, and the decisions taken (copy of the project doc `build-log.md`).
-- `docs/deploy.md` — cloud deployment, credentials, builds, store release and rollback.
-- `docs/deploy-checklist.md` — the one ordered checklist for account-holder actions.
+- `docs/design-development/BUILD-LOG.md` — what has been built, when, and the decisions taken (copy of the project doc `build-log.md`).
+- `docs/deployment/deploy.md` — cloud deployment, credentials, builds, store release and rollback.
+- `docs/deployment/deploy-checklist.md` — the one ordered checklist for account-holder actions.
 - Architecture: the Claude Doc "Field Service Platform — Architecture" (code layout, security model, modules, data model, how to add a module, known gaps).
 - Plans in the Claude project: `phase-1-plan-flooring.md`, `platform-admin-plan.md`, `settings-and-timesheets-plan.md`, `deployment-options.md`.
 

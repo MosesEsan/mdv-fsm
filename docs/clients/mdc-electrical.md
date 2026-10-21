@@ -85,7 +85,7 @@ Do this on the hosted project only, with approval. Never run the seed scripts th
 3. Branding: job titles worker = "Apprentice" and viewer = "Accounts Administrator". Add the logo and colours once Martin sends them.
 4. Customers: import his list, or let them be added as visits are logged.
 5. Invite Martin as Owner. Invite the apprentice as Worker and accounts as View only, from Team or the admin.
-6. Deploy `ts-export` and the web dashboard (Vercel) for the office report. See `docs/deploy.md`.
+6. Deploy `ts-export` and the web dashboard (Vercel) for the office report. See `docs/deployment/deploy.md`.
 
 ## 7. Open questions
 

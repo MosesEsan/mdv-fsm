@@ -97,7 +97,7 @@ Deploy the FSM as its own Vercel project and route `mesandigitalventures.com/fsm
 
 ## EAS builds, credentials and updates
 
-For the complete mobile release sequence, store-dashboard steps, verification gates and rollback procedure, follow [`docs/mobile-store-deployment.md`](mobile-store-deployment.md).
+For the complete mobile release sequence, store-dashboard steps, verification gates and rollback procedure, follow [`docs/deployment/mobile-store-deployment.md`](mobile-store-deployment.md).
 
 Replace bundle/project placeholders before running EAS. Let EAS manage iOS certificates/profiles and the Android keystore. Create one APNs key when push work begins (it is not implemented yet). Commands:
 
@@ -124,7 +124,7 @@ Create a TestFlight internal group for the platform team and pilot owner. For Pl
 
 ## Store submission
 
-Review and replace every DRAFT/placeholder in `store.config.json`, then use `eas metadata:push`. Complete privacy answers from `docs/store/app-privacy.md`, Play listing/data safety, screenshots and counsel-approved privacy policy/terms. The smallest deletion option is a public request page or support workflow handled by a platform admin; the final approach remains an open decision.
+Review and replace every DRAFT/placeholder in `store.config.json`, then use `eas metadata:push`. Complete privacy answers from `docs/deployment/store/app-privacy.md`, Play listing/data safety, screenshots and counsel-approved privacy policy/terms. The smallest deletion option is a public request page or support workflow handled by a platform admin; the final approach remains an open decision.
 
 ## Dedicated client project
 

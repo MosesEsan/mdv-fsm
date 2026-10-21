@@ -1,15 +1,17 @@
 # Cloud launch checklist
 
+Updated 2026-10-21: GitHub repo, hosted dev (`shared-dev`) and its login hook are done; Apple Developer and Google Play Console accounts exist (their app records and API keys are still to do).
+
 This is the single ordered list of steps that require your accounts, payment, secrets or dashboard approval.
 
 - [ ] Decide the email provider, privacy-policy owner, deletion approach, and which Apple/Google organisation owns the shared app. The shared app identifier is `ie.mesandigital.fsm`; the admin URL is `https://mesandigitalventures.com/fsm/admin`.
-- [ ] Create a private GitHub repo: run `gh repo create <GITHUB_ORG>/<REPO_NAME> --private --source . --push` from the repo root.
+- [x] Create a private GitHub repo: run `gh repo create <GITHUB_ORG>/<REPO_NAME> --private --source . --push` from the repo root.
 - [ ] Supabase Dashboard → New project: `shared-dev` is registered as `pokflcodhocxkwcjriit`; create `shared-prod` in Europe West (Ireland) and paste its ref into `deploy/projects.json`. Production paid plan is recommended for daily backups/no pausing (cost).
-- [ ] Copy `deploy/env/.env.example` to `deploy/env/shared-dev.env` and `shared-prod.env`; fill values locally. Do not commit them.
-- [ ] GitHub → Settings → Secrets and variables → Actions: add every secret/variable named in `docs/deploy.md`.
+- [x] Copy `deploy/env/.env.example` to `deploy/env/shared-dev.env` and `shared-prod.env`; fill values locally. Do not commit them.
+- [ ] GitHub → Settings → Secrets and variables → Actions: add every secret/variable named in `docs/deployment/deploy.md`.
 - [ ] GitHub → Settings → Environments → New environment → `production`: add required reviewers and limit deployment branches to `main`.
-- [ ] Link and deploy dev: inspect `npm run deploy:supabase -- --env dev --dry-run`, then run without `--dry-run`. Do not deploy production yet.
-- [ ] Supabase dev → Authentication → Hooks: enable `public.custom_access_token_hook`. Authentication → URL Configuration: set dev admin Site URL and `/set-password` plus `field-service://set-password`. Providers → Email: disable signups. SMTP Settings: paste chosen provider SMTP credentials. Set reviewed JWT expiry.
+- [x] Link and deploy dev: inspect `npm run deploy:supabase -- --env dev --dry-run`, then run without `--dry-run`. Do not deploy production yet.
+- [x] Supabase dev → Authentication → Hooks: enable `public.custom_access_token_hook`. Authentication → URL Configuration: set dev admin Site URL and `/set-password` plus `field-service://set-password`. Providers → Email: disable signups. SMTP Settings: paste chosen provider SMTP credentials. Set reviewed JWT expiry.
 - [ ] Create the first dev platform admin: export dev URL/service-role key locally and run `npm run admin:create -- --email=<YOUR_EMAIL>`.
 - [ ] Vercel: deploy the GitHub repo as `mdv-fsm-admin`, then route the existing `mesan-digital-ventures` project’s `/fsm/*` path to it. Framework: Other; build/output come from `vercel.json`. Add Preview dev and Production prod values for `CLIENT`, `EAS_PROJECT_ID`, public Supabase URL, anon key and `EXPO_PUBLIC_WEB_BASE_URL=/fsm`.
 - [ ] Supabase Auth redirect allow-list: add `https://mesandigitalventures.com/fsm/set-password` and set the Site URL to `https://mesandigitalventures.com/fsm`.
@@ -19,9 +21,9 @@ This is the single ordered list of steps that require your accounts, payment, se
 - [ ] Run preview iOS/Android builds. When prompted, let EAS manage certificates, provisioning profiles and Android keystore. Create one APNs key when push notifications are scheduled.
 - [ ] Apple Developer: enrol as an organisation (D-U-N-S required; annual cost). App Store Connect → Apps → +: create the app with the final bundle ID. Users and Access → Integrations → App Store Connect API: create a key; store ID, issuer and `.p8` in EAS secrets/placeholders.
 - [ ] Google Play Console: pay for/create the developer account (cost), create the app, build the production AAB, and manually upload the first release to Testing → Internal testing. Google Cloud/Play API access: create a service account with release permission; store its JSON as an EAS file secret.
-- [ ] Build/submit first releases with the four commands in `docs/deploy.md`. App Store Connect → TestFlight: create an internal group for the platform team and pilot owner. Play Console → Internal testing: add testers.
+- [ ] Build/submit first releases with the four commands in `docs/deployment/deploy.md`. App Store Connect → TestFlight: create an internal group for the platform team and pilot owner. Play Console → Internal testing: add testers.
 - [ ] Decide whether to create an invented Review business in production. If yes, approve a dedicated review seeder and reviewer credentials before it is run.
-- [ ] Have the privacy-policy owner/counsel publish `<PRIVACY_URL>`, terms, `<SUPPORT_URL>` and `<ACCOUNT_DELETION_URL>`, covering everything in `docs/store/legal-requirements.md`.
+- [ ] Have the privacy-policy owner/counsel publish `<PRIVACY_URL>`, terms, `<SUPPORT_URL>` and `<ACCOUNT_DELETION_URL>`, covering everything in `docs/deployment/store/legal-requirements.md`.
 - [ ] Capture required iPhone 6.9-inch, iPad 13-inch, Android phone/tablet screenshots from invented Review data. Use the current sizes shown in each console.
-- [ ] Replace every DRAFT/placeholder in `store.config.json` and `docs/store/*`; complete App Privacy/Data safety; push iOS metadata with `eas metadata:push` and paste the Play listing in Play Console.
+- [ ] Replace every DRAFT/placeholder in `store.config.json` and `docs/deployment/store/*`; complete App Privacy/Data safety; push iOS metadata with `eas metadata:push` and paste the Play listing in Play Console.
 - [ ] Resolve account deletion: ship a public request URL/support workflow at minimum; confirm with Apple whether in-app deletion is required for this invite-only model before review.
