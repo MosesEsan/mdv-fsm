@@ -49,18 +49,18 @@ The Mac and phone must be on the same network. Keep Docker, Supabase, and Metro 
 
 ## Seed users
 
-`npm run seed:users` is safe to run repeatedly on local/dev only. Never run either seed against production. The script prints the logins; all use the value of `SEED_PASSWORD`:
+`npm run seed:users` is safe to run repeatedly on local/dev only. Never run any seed against production. Seed one business with `npm run seed:users -- ag` (or `mdc`, `demo`). All logins use the value of `SEED_PASSWORD`.
 
-- `owner@construction.test`
-- `manager@construction.test`
-- `supervisor@construction.test`
-- `worker1@construction.test`
-- `worker2@construction.test`
-- `owner@flooring.test`
-- `fitter@flooring.test`
+Each client business has its own guide covering setup, what the seed creates, the logins for each role, and a test script:
+
+- `docs/clients/ag-property-maintenance.md`: AG Property Maintenance (`*@property.test`)
+- `docs/clients/mdc-electrical.md`: MDC Electrical (demo) (`*@mdc.test`)
+
+Other demo logins (`npm run seed:users -- demo`):
+
+- `owner@construction.test`, `manager@construction.test`, `supervisor@construction.test`, `worker1@construction.test`, `worker2@construction.test` (Demo Construction: Timesheets)
+- `owner@flooring.test`, `fitter@flooring.test` (Demo Flooring: Timesheets, Scheduling, Flooring)
 - `admin@platform.test` (platform admin: open the web build at `/admin`)
-
-Demo Flooring has Timesheets, Scheduling and Flooring switched on; Demo Construction has Timesheets.
 
 ## Edge Functions, web admin and invite emails
 
@@ -96,6 +96,7 @@ npm run update:preview -- --message "Describe the update"
 
 ## Documentation
 
+- `docs/clients/*.md` — per-business setup, seeding and role testing.
 - `docs/BUILD-LOG.md` — what has been built, when, and the decisions taken (copy of the project doc `build-log.md`).
 - `docs/deploy.md` — cloud deployment, credentials, builds, store release and rollback.
 - `docs/deploy-checklist.md` — the one ordered checklist for account-holder actions.

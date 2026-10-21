@@ -2,7 +2,7 @@
 
 Read this first in any new session (cloud or local). It says what the product is, who it's for, how the code is organised, how to work in it, and what's next. Last updated 2026-10-20.
 
-Also read: `AGENTS.md` (repo workflow, cloud commands), `README.md` (local setup), `docs/BUILD-LOG.md` (what was built, in order), `docs/deploy.md` + `docs/deploy-checklist.md` (cloud runbook).
+Also read: `docs/clients/*.md` (per-business setup, seeding, test logins), `AGENTS.md` (repo workflow, cloud commands), `README.md` (local setup), `docs/BUILD-LOG.md` (what was built, in order), `docs/deploy.md` + `docs/deploy-checklist.md` (cloud runbook).
 
 ## 1. The product
 
