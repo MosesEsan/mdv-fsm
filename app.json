@@ -20,6 +20,7 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "mosesesan"
   }
 }
