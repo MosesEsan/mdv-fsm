@@ -86,6 +86,8 @@ design/flows-board/          the interactive flows board (source + build)
 
 **Built and committed:** database (job records, extra work), mobile screens matched to the board (jobs list opens first, job page, new/edit job, post update, extra work log/entry/office list), branded sign in / set password / home, AG demo data with his logo and colours (`#1973B3`, `#13406C`), owner Arnis Gelsons (`owner@property.test`), workers `manager@`, `adam@`, `kasia@`, `dean@property.test` (password = `SEED_PASSWORD`).
 
+**Since then:** bottom tabs (Jobs, Customers, Extra work, Settings), Customers list and page, Settings with Sign out, and Team (owner invites and manages people from the phone; `team-invite` function).
+
 **Not yet verified on a phone.** The seed (photos, logo upload) has never run end to end.
 
 **Left before the demo:**

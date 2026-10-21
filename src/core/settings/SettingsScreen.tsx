@@ -1,11 +1,12 @@
 import { Text, View } from 'react-native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
+import { isOwnerRole } from '@/core/auth/claims';
 import { useSession } from '@/core/auth/AuthProvider';
 import { useBranding } from '@/core/branding';
 import { TabBar, useTabs } from '@/core/modules/TabBar';
 import { Button, Card, ErrorText, Screen, colors, styles } from '@/core/ui';
-import { AppBar, LoadingCards, SectionLabel } from '@/core/ui/kit';
+import { AppBar, ListRow, LoadingCards, SectionLabel } from '@/core/ui/kit';
 import { ModuleSettingsSection } from './components/ModuleSettingsSection';
 import { getSettingsDefinitions, type SettingsNamespace } from './registry';
 import { useTenantSettings } from './useTenantSettings';
@@ -35,6 +36,8 @@ export function SettingsScreen() {
           <Text style={styles.muted}>{[brand.roleLabel(claims?.role), session?.user.email].filter(Boolean).join(' · ')}</Text>
           {brand.name ? <Text style={styles.muted}>{brand.name}</Text> : null}
         </Card>
+
+        {isOwnerRole(claims?.role) ? <ListRow title="Team" lines={['Invite people, change what they do, switch access off']} onPress={() => router.push('/team')} /> : null}
 
         {isLoading ? <LoadingCards n={1} /> : null}
         {error ? <ErrorText error={error} /> : null}

@@ -169,3 +169,8 @@ Invite emails: http://localhost:54324.
 - Settings: coloured bar, your name, role and business, feature settings for owners, Sign out, app version.
 - "Add to invoice" button (status stays "Added to invoice"). New job no longer lists customers before you type 2 letters.
 - Flows board not yet updated for tabs, Customers or the new wording.
+
+### 2026-10-21 — Team management for the owner
+- Core `core_team` migration: `team_members()` (with email and whether they've signed in), `team_add_member`, `team_update_member`, all owner only, plus `team_log`. Owners can't create owners, change themselves or touch other owners. 14 pgTAP checks (243 total).
+- `team-invite` Edge Function: the owner invites by name, email and role; the email link opens the app's set-password screen (`Linking.createURL('/set-password')`, which must be on Supabase's redirect list; in Expo Go that's an `exp://` link).
+- Team screen (Settings → Team, owner only): list with "Invite sent" / "Access off", invite sheet, change role or name, switch access off and on. Access off takes effect at the next token refresh (up to an hour).
