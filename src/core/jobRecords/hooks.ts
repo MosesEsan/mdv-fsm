@@ -12,6 +12,7 @@ import {
   deleteUpdate, editUpdate, fetchJobList, fetchJobRecord, fetchPeople, fetchUpdates, jobKeys, postUpdate, saveJob, setAssignees, setJobStatus, updateInstructions,
   type SaveJobInput,
 } from './api';
+import { jobRecordsChannelTopic } from './realtime';
 import type { JobFilter, JobStatus } from './rules';
 
 export function useJobContext() {
@@ -75,7 +76,9 @@ export function useJobRecordsLive(): void {
       void qc.invalidateQueries({ queryKey: ['job-files'] });
     };
     const channel = supabase
-      .channel(`job-records:${tenantId}`)
+      // Realtime reuses channels by topic. A unique topic prevents overlapping
+      // screens and React development remounts from configuring a joined channel.
+      .channel(jobRecordsChannelTopic(tenantId))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'job_updates', filter: `tenant_id=eq.${tenantId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'job_assignees', filter: `tenant_id=eq.${tenantId}` }, refresh)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'job_files', filter: `tenant_id=eq.${tenantId}` }, refresh)
