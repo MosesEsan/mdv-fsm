@@ -174,3 +174,13 @@ Invite emails: http://localhost:54324.
 - Core `core_team` migration: `team_members()` (with email and whether they've signed in), `team_add_member`, `team_update_member`, all owner only, plus `team_log`. Owners can't create owners, change themselves or touch other owners. 14 pgTAP checks (243 total).
 - `team-invite` Edge Function: the owner invites by name, email and role; the email link opens the app's set-password screen (`Linking.createURL('/set-password')`, which must be on Supabase's redirect list; in Expo Go that's an `exp://` link).
 - Team screen (Settings → Team, owner only): list with "Invite sent" / "Access off", invite sheet, change role or name, switch access off and on. Access off takes effect at the next token refresh (up to an hour).
+
+## 2026-10-21 — MDC Electrical V1, steps 2 and 3.1–3.3
+- Flows board: "MDC Electrical" journey (Log a visit; Owner reviews and corrects; Monthly report for invoicing) with a placeholder brand. Source `design/flows-board/clients/mdc-electrical.js`; `build.py` now takes several client files.
+- Timesheets settings: `logAgainst` gains `customer`; new `materials` (`off` | `optional`). Zod and SQL mirror agree (unit test).
+- `ts_entry_materials` (item, quantity, unit each | m; whole numbers for each, 2 decimals for metres; no prices). Follows the parent entry's RLS and week lock.
+- `ts_entries.customer_id` (same-business FK). In customer mode: customer and work done (≤ 500) required, at most 16 hours. Staff can see and add customers only while their business logs against customers.
+- "Corrected by": an edit by anyone but the worker stamps `corrected_by` / `corrected_at` and is logged in `ts_events` (deletes too).
+- `ts_save_visit(p_entry, p_materials)` saves a visit and its materials together (runs as the caller, so RLS applies).
+- Tests: `timesheets_visits.test.sql` (30); database total 273, all passing. Unit tests `visit.test.ts`, settings test updated.
+- Waiting: OK on the Accounts Administrator role (step 3.4) before the report, screens and seed.
