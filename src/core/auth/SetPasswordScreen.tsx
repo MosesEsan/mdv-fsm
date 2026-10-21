@@ -30,7 +30,7 @@ export function SetPasswordScreen() {
     setBusy(true);
     try {
       await setPassword(password);
-      router.replace('/');
+      router.replace('/(app)/(tabs)');
     } catch (e) {
       setProblem(e instanceof Error ? e.message : String(e));
     } finally {

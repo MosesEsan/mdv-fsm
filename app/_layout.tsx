@@ -56,13 +56,13 @@ function Guard() {
   if (authError) return <Message text={authError} onSignOut={signOut} />;
   if (!session) return area === '(auth)' || isPublicRoute(segments) ? stack : <Redirect href="/(auth)/login" />;
   if (area === '(auth)' && page === 'set-password') return stack; // invite links land here signed in
-  if (area === 'admin') return isPlatformAdmin ? stack : <Redirect href="/" />;
+  if (area === 'admin') return isPlatformAdmin ? stack : <Redirect href="/(app)/(tabs)" />;
   if (!claims) {
     return isPlatformAdmin
       ? <Redirect href="/admin" />
       : <Message text="Your account isn't set up yet. Ask the owner." onSignOut={signOut} />;
   }
-  if (area === '(auth)') return <Redirect href="/" />;
+  if (area === '(auth)') return <Redirect href="/(app)/(tabs)" />;
   return stack;
 }
 
