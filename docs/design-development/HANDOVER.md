@@ -37,7 +37,8 @@ Seeded demo businesses: `00000000-0000-0000-0000-000000000001` Demo Flooring, `.
 ```
 app/                         Expo Router routes (thin wrappers around screens)
   (auth)/login, set-password
-  (app)/index (Home), jobs/, extra-work/, schedule/, my-jobs/, flooring/, timesheets/, settings
+  (app)/(tabs)/              bottom tabs (Expo Router Tabs): index (Home), jobs/, customers/, extra-work/, visits, visit-entries, visit-report, settings
+  (app)/                     opens over the tabs: team/, visit/, schedule/, my-jobs/, flooring/, timesheets/
   admin/                     web platform admin
 src/core/
   ui/index.tsx               primitives: Screen, Card, Button (variants, sizes, icon), Chip, TextField, Notice, Title
