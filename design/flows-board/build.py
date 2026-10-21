@@ -1,11 +1,11 @@
-"""Assemble one self-contained flows board: python3 build.py <client.js> <out.html> "<Board title>" "<one-line>" """
+"""Assemble one self-contained flows board: python3 build.py <client.js[,more.js]> <out.html> "<Board title>" "<one-line>" """
 import sys, os
 HERE = os.path.dirname(os.path.abspath(__file__))
 client, out, title, line = sys.argv[1:5]
 css = open(HERE+'/engine.css').read() + open(HERE+'/engine-extra.css').read()
 pre = open(HERE+'/engine-pre.js').read()
 post = open(HERE+'/engine-post.js').read()
-body = open(client).read()
+body = '\n'.join(open(c).read() for c in client.split(','))
 html = f'''<meta charset="utf-8">
 <title>{title}</title>
 <meta name="claude:viewport-fit-sides" content="cover">
