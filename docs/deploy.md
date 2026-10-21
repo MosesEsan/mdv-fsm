@@ -97,6 +97,8 @@ Deploy the FSM as its own Vercel project and route `mesandigitalventures.com/fsm
 
 ## EAS builds, credentials and updates
 
+For the complete mobile release sequence, store-dashboard steps, verification gates and rollback procedure, follow [`docs/mobile-store-deployment.md`](mobile-store-deployment.md).
+
 Replace bundle/project placeholders before running EAS. Let EAS manage iOS certificates/profiles and the Android keystore. Create one APNs key when push work begins (it is not implemented yet). Commands:
 
 ```bash
