@@ -28,4 +28,12 @@ describe('module menu', () => {
     expect(navFor(undefined, on('timesheets'), modules)).toEqual([]);
     expect(navFor('owner', on(), modules)).toEqual([]);
   });
+  it('hides entries whose settings rule says no', () => {
+    const list = [{ id: 'x', feature: 'x', title: 'X', nav: [
+      { path: '/a', title: 'Weekly', roles: 'all' as const, when: (st: Record<string, unknown> | undefined) => st?.mode !== 'visits' },
+      { path: '/b', title: 'Visits', roles: 'all' as const, when: (st: Record<string, unknown> | undefined) => st?.mode === 'visits' },
+    ] }];
+    expect(navFor('worker', on('x'), list, { mode: 'visits' }).map((i) => i.title)).toEqual(['Visits']);
+    expect(navFor('worker', on('x'), list, {}).map((i) => i.title)).toEqual(['Weekly']);
+  });
 });

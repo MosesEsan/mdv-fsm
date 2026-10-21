@@ -22,6 +22,8 @@ export type NavItem = {
   startHere?: boolean;
   /** Show as a bottom tab when the business opens on a start-here screen (e.g. Jobs, Customers, Extra work). */
   tab?: boolean;
+  /** Show only when the business's settings call for it (e.g. a module set up for customer visits). Pure. */
+  when?: (settings: Record<string, unknown> | undefined) => boolean;
 };
 
 export type ModuleDefinition = {
@@ -49,13 +51,14 @@ export function navFor(
   role: AppRole | undefined,
   isFeatureEnabled: (feature: string) => boolean,
   list: ModuleDefinition[] = getModules(),
+  settings?: Record<string, unknown>,
 ): (NavItem & { moduleId: string; moduleTitle: string })[] {
   if (!role) return [];
   return list
     .filter((m) => isFeatureEnabled(m.feature))
     .flatMap((m) =>
       m.nav
-        .filter((item) => item.roles === 'all' || item.roles.includes(role))
+        .filter((item) => (item.roles === 'all' || item.roles.includes(role)) && (!item.when || item.when(settings)))
         .map((item) => ({ ...item, moduleId: m.id, moduleTitle: m.title })),
     )
     .sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || a.title.localeCompare(b.title));

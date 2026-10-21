@@ -105,6 +105,12 @@ design/flows-board/          the interactive flows board (source + build)
 
 **Documents (Claude Docs):** "AG Property Maintenance — Job App Proposal and Trial" (client-facing: demo script, 4-week free trial, proposed €149 + VAT/month up to 6 users, questions) and "AG Property Maintenance — Internal Delivery Plan" (status, trial setup, cost list, pricing, risks). Hourly rate and support hours in the cost list are placeholders.
 
+## 6b. MDC Electrical — current state
+
+**Built and committed (not yet run on a device):** Timesheets set up for customer visits: settings (`logAgainst: customer`, `materials: optional`), materials per visit, visits per customer, "Corrected by", read-only `viewer` role (Accounts Administrator), customer × month report with PDF/CSV export, and the screens (Today, Log a visit, Entries, Visit, Monthly report). Demo business seeded by `supabase/seeds/20_mdc-electrical.sql` + `npm run seed:users -- mdc` (`owner@mdc.test`, `jack@mdc.test`, `accounts@mdc.test`).
+
+**Left:** run the acceptance workflow on a phone and the web (log a visit, refresh, owner corrects, find it in the report, PDF, CSV, print) and fix what it finds; deploy `ts-export`; settle the price (Docs: "MDC Electrical — Timesheet App Proposal and Trial", "MDC Electrical — Internal Delivery Plan"). Open with Martin: his father's name, report header, units beyond each/metres, month locking, no signal, delivery option.
+
 ## 7. Open questions (all clients)
 
 - AG: offline updates; real staff count; manager permissions; customer photo pack; invoicing software name; final price after the trial.

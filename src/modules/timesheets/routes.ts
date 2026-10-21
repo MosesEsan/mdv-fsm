@@ -7,3 +7,8 @@ export { EntryFormScreen } from './screens/EntryFormScreen';
 export { ApprovalsScreen } from './screens/ApprovalsScreen';
 export { WeekReviewScreen } from './screens/WeekReviewScreen';
 export { HoursReportScreen } from './screens/HoursReportScreen';
+export { VisitsTodayScreen } from './visits/screens/VisitsTodayScreen';
+export { VisitFormScreen } from './visits/screens/VisitFormScreen';
+export { VisitEntriesScreen } from './visits/screens/VisitEntriesScreen';
+export { VisitScreen } from './visits/screens/VisitScreen';
+export { CustomerReportScreen } from './visits/screens/CustomerReportScreen';

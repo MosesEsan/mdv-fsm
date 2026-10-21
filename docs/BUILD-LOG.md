@@ -203,3 +203,10 @@ Invite emails: http://localhost:54324.
 - `ts-export` Edge Function: `{ report: 'customer_month', customerId, month: 'YYYY-MM', format }` → CSV (one line per visit) or A4 PDF (headers repeat, each visit kept on one page with its materials, totals per person and materials, page numbers). `buildTablePdf` gained optional page numbers.
 - Tests: `timesheets_customer_report.test.sql` (11); database total 298, all passing. Unit tests `customerReport.test.ts`.
 - Print on web is part of the screens step (browser print of the report screen).
+
+## 2026-10-21 — MDC screens (step 3.6)
+- Menu entries can now depend on settings (`NavItem.when(settings)`, pure, unit-tested). Timesheets in customer mode shows Today / Entries / Report as start-here tabs and hides My hours, Sign-offs and Hours & export (so no "Send in my week"). Sign-offs is also hidden whenever approval is `none`.
+- `src/modules/timesheets/visits/`: api, pure rules (unit-tested), and screens matching the flows board: Today, Log a visit / Edit / Correct (customer chips, new customer, Today/Yesterday, start and finish, hours as you type, work done, materials with remembered units, problems listed above Save), Entries (month, person and customer filters, "Corrected" tag), Visit (materials, Corrected by, Edit/Correct, delete with confirm, link to the month report), Monthly report (customer + month, lines, totals, Download PDF, Download CSV, Print = opens the PDF to print).
+- Routes: `app/(app)/timesheets/visits/{index,new,entries,report,[id]/index,[id]/edit}.tsx`.
+- Accounts (viewer) gets Entries and Report only; no Log, Edit or Delete buttons (the database refuses them anyway).
+- Not yet run on a phone or in a browser: the web export can't run in the cloud workspace.

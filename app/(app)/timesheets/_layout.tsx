@@ -11,6 +11,7 @@ export default function TimesheetsLayout() {
           <Stack.Screen name="approvals/index" options={{ title: 'Sign-offs' }} />
           <Stack.Screen name="approvals/[weekId]" options={{ title: 'Week' }} />
           <Stack.Screen name="reports/index" options={{ title: 'Hours & export' }} />
+          <Stack.Screen name="visits" options={{ headerShown: false }} />
         </Stack>
       </TimesheetsGate>
   );
