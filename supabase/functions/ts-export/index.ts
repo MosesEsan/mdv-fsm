@@ -1,4 +1,5 @@
-// ts-export (Timesheets module): CSV or PDF of signed-off timesheets for whole weeks in a period.
+// ts-export (Timesheets module): CSV or PDF of signed-off timesheets for whole weeks in a period,
+// or (report = 'customer_month') one customer's visits for a month.
 // Stores the file in the core 'exports' bucket, marks the weeks exported, records it in core
 // file_exports, and returns the path (the app makes its own download link).
 // Trust model: rows are read and the export recorded with the CALLER's token (the database decides
@@ -8,6 +9,7 @@ import { contentTypes, filePath } from '../_shared/files.ts';
 import { json, preflight, readJson } from '../_shared/http.ts';
 import { buildTablePdf } from '../_shared/pdf/table.ts';
 import { removeFile, storeFile } from '../_shared/storage.ts';
+import { buildCustomerCsv, customerReportFileName, customerReportTable, validateCustomerReportRequest, type VisitRow } from './customerReport.ts';
 import { buildEntriesCsv, exportFileName, summarise, summaryTable, validateExportRequest, type ExportRow } from './rows.ts';
 
 const MODULE = 'timesheets';
@@ -18,7 +20,9 @@ Deno.serve(async (req) => {
 
   const clients = clientsFor(req);
   if (!clients) return json(401, { error: 'Please sign in again.' });
-  const request = validateExportRequest(await readJson(req));
+  const body = await readJson(req);
+  if ((body as { report?: unknown } | null)?.report === 'customer_month') return customerMonth(clients, body);
+  const request = validateExportRequest(body);
   if ('error' in request) return json(400, request);
   const { asUser, admin } = clients;
 
@@ -60,3 +64,46 @@ Deno.serve(async (req) => {
 
   return json(200, { export: record.data, path, fileName: exportFileName(request.from, request.to, request.format) });
 });
+
+// Customer × month report. Rows and the record use the caller's token; owner, managers and accounts (viewer) may export.
+async function customerMonth(clients: NonNullable<ReturnType<typeof clientsFor>>, body: unknown): Promise<Response> {
+  const request = validateCustomerReportRequest(body);
+  if ('error' in request) return json(400, request);
+  const { asUser, admin } = clients;
+
+  const [rowsResult, customerResult] = await Promise.all([
+    asUser.rpc('ts_customer_month_report', { p_customer: request.customerId, p_month: `${request.month}-01` }),
+    asUser.from('customers').select('name, tenant_id').eq('id', request.customerId).single(),
+  ]);
+  if (rowsResult.error) return json(400, { error: rowsResult.error.message });
+  if (customerResult.error || !customerResult.data) return json(404, { error: 'That customer wasn’t found.' });
+  const rows = (rowsResult.data ?? []) as VisitRow[];
+  if (rows.length === 0) return json(200, { empty: true, message: 'No visits for this customer in that month.' });
+  const { name: customerName, tenant_id: tenantId } = customerResult.data;
+
+  let bytes: Uint8Array;
+  if (request.format === 'csv') {
+    bytes = new TextEncoder().encode(buildCustomerCsv(rows));
+  } else {
+    const { data: tenant } = await asUser.from('tenants').select('name, timezone, branding').eq('id', tenantId).single();
+    bytes = await buildTablePdf(customerReportTable(rows, {
+      businessName: (tenant?.branding as { pdfName?: string } | null)?.pdfName ?? tenant?.name ?? 'Your business',
+      customerName,
+      month: request.month,
+      generatedAt: new Intl.DateTimeFormat('en-IE', { dateStyle: 'medium', timeStyle: 'short', timeZone: tenant?.timezone ?? 'Europe/Dublin' }).format(new Date()),
+    }));
+  }
+
+  const path = filePath(tenantId, MODULE, 'exports', `customer_${request.month}_${crypto.randomUUID()}.${request.format}`);
+  if (!(await storeFile(admin, path, bytes, contentTypes[request.format]))) {
+    return json(500, { error: 'The file could not be saved. Please try again.' });
+  }
+  const record = await asUser.rpc('ts_record_customer_report', {
+    p_customer: request.customerId, p_month: `${request.month}-01`, p_format: request.format, p_storage_path: path,
+  });
+  if (record.error) {
+    await removeFile(admin, path);
+    return json(record.error.code === '42501' ? 403 : 400, { error: record.error.message });
+  }
+  return json(200, { export: record.data, path, fileName: customerReportFileName(customerName, request.month, request.format) });
+}

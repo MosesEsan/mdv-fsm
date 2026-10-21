@@ -196,3 +196,10 @@ Invite emails: http://localhost:54324.
 - Timesheets: viewers see every person's entries, weeks and history in their business.
 - Role lists updated: profiles check, branding, platform/team invites, team roles (offered when Timesheets is on).
 - Tests: `core_viewer_role.test.sql` (14, including "every table has the block"); database total 287, all passing.
+
+## 2026-10-21 — Customer × month report and export (MDC step 3.5)
+- `ts_customer_month_report(customer, month)`: one line per visit (date, person, work done, start–finish, hours, materials, corrected by). Runs as the caller, so workers get only their own visits; owner, managers and accounts get everyone's.
+- `ts_record_customer_report()` records the file in core `file_exports`. Core exports now allow the viewer role (list, create, download).
+- `ts-export` Edge Function: `{ report: 'customer_month', customerId, month: 'YYYY-MM', format }` → CSV (one line per visit) or A4 PDF (headers repeat, each visit kept on one page with its materials, totals per person and materials, page numbers). `buildTablePdf` gained optional page numbers.
+- Tests: `timesheets_customer_report.test.sql` (11); database total 298, all passing. Unit tests `customerReport.test.ts`.
+- Print on web is part of the screens step (browser print of the report screen).

@@ -12,6 +12,8 @@ export type TablePdf = {
   /** Each group is kept on one page and followed by a thin line. */
   groups: PdfRow[][];
   total?: PdfRow;
+  /** "Page 1 of 3" at the foot of every page. */
+  pageNumbers?: boolean;
 };
 
 const A4: [number, number] = [595.28, 841.89];
@@ -82,6 +84,13 @@ export async function buildTablePdf(spec: TablePdf): Promise<Uint8Array> {
   if (spec.total) {
     ensure(ROW);
     row(spec.total);
+  }
+  if (spec.pageNumbers) {
+    const pages = doc.getPages();
+    pages.forEach((p, i) => {
+      const label = `Page ${i + 1} of ${pages.length}`;
+      p.drawText(label, { x: A4[0] - M - font.widthOfTextAtSize(label, 8), y: M / 2, size: 8, font, color: grey });
+    });
   }
   return doc.save();
 }
