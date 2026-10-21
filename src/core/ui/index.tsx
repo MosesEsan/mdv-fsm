@@ -30,7 +30,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 export function Screen({ children, scroll = true, contentStyle }: { children: ReactNode; scroll?: boolean; contentStyle?: ViewStyle }) {
   return scroll ? (
-    <ScrollView style={styles.screen} contentContainerStyle={[styles.screenContent, contentStyle]} keyboardShouldPersistTaps="handled">
+    <ScrollView style={styles.screen} contentContainerStyle={[styles.screenContent, contentStyle]} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive">
       {children}
     </ScrollView>
   ) : (

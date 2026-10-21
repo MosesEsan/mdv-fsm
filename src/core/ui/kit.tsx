@@ -1,7 +1,7 @@
 // Shared pieces from the flows board's design guide: coloured top bar, pills, photo grid and viewer,
 // bottom sheet, and empty / loading / failed states. Import from '@/core/ui/kit'.
 import { useState, type ReactNode } from 'react';
-import { ActivityIndicator, Image, Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, colors, useTheme } from './index';
@@ -167,6 +167,8 @@ export function Sheet({ visible, title, onClose, children }: { visible: boolean;
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      {/* Lifts the sheet above the keyboard (a Modal isn't resized by the system on either platform). */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <Pressable accessibilityLabel="Close" onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(31,35,40,0.45)', justifyContent: 'flex-end' }}>
         <Pressable accessibilityViewIsModal onPress={() => {}} style={{ backgroundColor: '#fff', borderTopLeftRadius: 18, borderTopRightRadius: 18, maxHeight: '88%', width: '100%', maxWidth: 600, alignSelf: 'center' }}>
           <ScrollView contentContainerStyle={{ paddingTop: 10, paddingHorizontal: 16, paddingBottom: insets.bottom + 16, gap: 12 }} keyboardShouldPersistTaps="handled">
@@ -176,6 +178,7 @@ export function Sheet({ visible, title, onClose, children }: { visible: boolean;
           </ScrollView>
         </Pressable>
       </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
