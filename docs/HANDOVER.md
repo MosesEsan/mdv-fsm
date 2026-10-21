@@ -28,7 +28,8 @@ Seeded demo businesses: `00000000-0000-0000-0000-000000000001` Demo Flooring, `.
 - Expo SDK 57, Expo Router, TypeScript, TanStack Query, Zod, `@expo/vector-icons` (Ionicons).
 - Supabase: Postgres + RLS on every table, Auth with a custom access token hook (`tenant_id`, `app_role` in the JWT), Storage (private buckets `job-files`, `branding`, `exports`), Realtime, Edge Functions (`platform-invite`, `ts-export`).
 - Region: eu-west-1 (Ireland).
-- **Hosted dev project:** `shared-dev`, ref `pokflcodhocxkwcjriit` (`deploy/projects.json`). Not deployed yet: needs `deploy/env/shared-dev.env` (DB password, service-role key; never committed), then `npm run deploy:supabase -- --env dev`, then enable the custom access token hook in the dashboard. Prod (`shared-prod`) not created.
+- **Hosted dev project:** `shared-dev`, ref `pokflcodhocxkwcjriit` (`deploy/projects.json`), deployed (Oct 2026). Re-deploy after new migrations or functions: `npm run deploy:supabase -- --env dev`. Prod (`shared-prod`) not created.
+- **Accounts in place:** Supabase organisation, Apple Developer (App Store), Google Play Console.
 - Local: `.env` currently points at a Mac on the LAN (`http://192.168.1.36:54321`). Switch to `https://pokflcodhocxkwcjriit.supabase.co` + hosted anon key once dev is deployed.
 
 ## 4. Code map
