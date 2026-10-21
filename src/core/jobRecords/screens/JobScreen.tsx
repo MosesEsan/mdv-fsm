@@ -11,13 +11,13 @@ import type { JobUpdate } from '../api';
 import { useJobContext, useJobMutations, useJobRecord, useJobRecordsLive, useJobUpdates, usePeople } from '../hooks';
 import { STAGE_LABEL, firstName, photoLabel, statusPill, whenLabel } from '../rules';
 
-type Props = { jobId: string; onPost: (stage?: 'completion') => void; onEdit: () => void };
+type Props = { jobId: string; onPost: (stage?: 'completion') => void; onEdit: () => void; onEditInstructions: () => void };
 type Tab = 'all' | 'before' | 'progress' | 'completion';
 
 const DAY_MS = 24 * 3600_000;
 
 /** One job (flows board: The job page). Everything about the job on one page, actions at the bottom. */
-export function JobScreen({ jobId, onPost, onEdit }: Props) {
+export function JobScreen({ jobId, onPost, onEdit, onEditInstructions }: Props) {
   useJobRecordsLive();
   const router = useRouter();
   const { tz, today, userId, isManager } = useJobContext();
@@ -27,11 +27,10 @@ export function JobScreen({ jobId, onPost, onEdit }: Props) {
   const files = useJobFiles(jobId);
   const people = usePeople();
   const { pending } = usePendingUploads(jobId);
-  const { setStatus, edit, remove, instructions, people: setPeople } = useJobMutations();
+  const { setStatus, edit, remove, people: setPeople } = useJobMutations();
   const [tab, setTab] = useState<Tab>('all');
   const [viewer, setViewer] = useState<{ list: JobFile[]; i: number } | null>(null);
-  const [sheet, setSheet] = useState<'complete' | 'people' | 'instr' | null>(null);
-  const [draft, setDraft] = useState('');
+  const [sheet, setSheet] = useState<'complete' | 'people' | null>(null);
   const [picked, setPicked] = useState<string[]>([]);
 
   // Tags from modules (e.g. extra work not yet invoiced), every add-on's hook in a fixed order.
@@ -100,7 +99,7 @@ export function JobScreen({ jobId, onPost, onEdit }: Props) {
         <Card>
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
             <SectionLabel>Instructions</SectionLabel>
-            {isManager && open ? <Button title="Edit" variant="secondary" size="sm" onPress={() => { setDraft(r.instructions ?? ''); setSheet('instr'); }} /> : null}
+            {isManager && open ? <Button title="Edit" variant="secondary" size="sm" onPress={onEditInstructions} /> : null}
           </View>
           <Text style={{ fontSize: 15, color: colors.text }}>{r.instructions || 'No instructions yet.'}</Text>
           <Text style={{ fontSize: 13, color: colors.muted }}>{meta}</Text>
@@ -199,15 +198,6 @@ export function JobScreen({ jobId, onPost, onEdit }: Props) {
         <Button title="Done" busy={setPeople.isPending} onPress={savePeople} />
       </Sheet>
 
-      <Sheet visible={sheet === 'instr'} title="Edit instructions" onClose={() => setSheet(null)}>
-        <TextInput value={draft} onChangeText={setDraft} multiline accessibilityLabel="Instructions"
-          style={[styles.input, { minHeight: 140, textAlignVertical: 'top' }]} />
-        <ErrorText error={instructions.error} />
-        <View style={styles.row}>
-          <View style={{ flex: 1 }}><Button title="Save" busy={instructions.isPending} onPress={() => instructions.mutate({ id: jobId, text: draft }, { onSuccess: () => setSheet(null) })} /></View>
-          <View style={{ flex: 1 }}><Button title="Cancel" variant="secondary" onPress={() => setSheet(null)} /></View>
-        </View>
-      </Sheet>
     </View>
   );
 }

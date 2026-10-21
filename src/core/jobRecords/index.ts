@@ -3,5 +3,6 @@ export { useJobContext, useJobList, useJobRecord, useJobUpdates, usePeople, useJ
 export { JobsScreen } from './screens/JobsScreen';
 export { JobScreen } from './screens/JobScreen';
 export { JobEditScreen } from './screens/JobEditScreen';
+export { InstructionsScreen } from './screens/InstructionsScreen';
 export { PostUpdateScreen } from './screens/PostUpdateScreen';
 export * from './rules';

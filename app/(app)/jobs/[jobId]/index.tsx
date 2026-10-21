@@ -8,6 +8,7 @@ export default function JobRoute() {
     <JobScreen
       jobId={jobId}
       onEdit={() => router.push({ pathname: '/jobs/[jobId]/edit', params: { jobId } })}
+      onEditInstructions={() => router.push({ pathname: '/jobs/[jobId]/instructions', params: { jobId } })}
       onPost={(stage) => router.push({ pathname: '/jobs/[jobId]/post', params: stage ? { jobId, stage } : { jobId } })}
     />
   );

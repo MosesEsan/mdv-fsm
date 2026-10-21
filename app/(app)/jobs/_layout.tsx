@@ -11,6 +11,7 @@ export default function JobsLayout() {
         <Stack.Screen name="[jobId]/index" options={{ title: 'Job' }} />
         <Stack.Screen name="[jobId]/edit" options={{ title: 'Edit job' }} />
         <Stack.Screen name="[jobId]/post" options={{ title: 'Post an update' }} />
+        <Stack.Screen name="[jobId]/instructions" options={{ title: 'Edit instructions' }} />
       </Stack>
     </FeatureGate>
   );
