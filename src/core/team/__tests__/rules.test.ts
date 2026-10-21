@@ -5,7 +5,7 @@ describe('team rules', () => {
   it('offers roles that fit the business', () => {
     expect(teamRoleOptions(() => false)).toEqual(['manager', 'worker']);
     expect(teamRoleOptions((f) => f === 'flooring')).toEqual(['manager', 'worker', 'fitter']);
-    expect(teamRoleOptions((f) => f === 'timesheets')).toEqual(['manager', 'supervisor', 'worker']);
+    expect(teamRoleOptions((f) => f === 'timesheets')).toEqual(['manager', 'supervisor', 'worker', 'viewer']);
   });
   it('lists what is missing from an invite', () => {
     expect(inviteProblems({ name: '', email: 'x', role: null })).toEqual(['Enter their name.', 'Enter a valid email address.', 'Pick what they do.']);

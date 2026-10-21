@@ -189,3 +189,10 @@ Invite emails: http://localhost:54324.
 - `supabase/seed.sql` → `supabase/seeds/00_demo-flooring-construction.sql`, `10_ag-property.sql`, `20_mdc-electrical.sql` (`config.toml` `[db.seed] sql_paths`).
 - `scripts/seed-users.ts` now runs `scripts/seed/{demo,ag,mdc}.ts`; pick one with `npm run seed:users -- ag` (or `mdc`, `demo`). Shared helpers in `scripts/seed/shared.ts`, which refuses non-local URLs unless `SEED_ALLOW_HOSTED_DEV=1`.
 - MDC demo: Martin (owner), Jack (apprentice), Michael (accounts, placeholder name, `viewer` role, which lands in the next step), 4 customers, 9 October visits with materials, as on the flows board.
+
+## 2026-10-21 — Read-only "viewer" role (MDC step 3.4)
+- New core role `viewer` (MDC labels it "Accounts Administrator" via branding `roleLabels`; default label "View only"). Token hook unchanged.
+- Writes refused by a statement trigger `zz_block_viewer_writes` on every business table (also catches SECURITY DEFINER functions). Exempt: profiles, file_exports, ts_events, platform tables.
+- Timesheets: viewers see every person's entries, weeks and history in their business.
+- Role lists updated: profiles check, branding, platform/team invites, team roles (offered when Timesheets is on).
+- Tests: `core_viewer_role.test.sql` (14, including "every table has the block"); database total 287, all passing.

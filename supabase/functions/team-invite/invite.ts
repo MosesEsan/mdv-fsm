@@ -1,5 +1,5 @@
 // Pure request check for team-invite (unit-tested).
-export const TEAM_ROLES = ['manager', 'supervisor', 'worker', 'fitter'] as const;
+export const TEAM_ROLES = ['manager', 'supervisor', 'worker', 'fitter', 'viewer'] as const;
 export type TeamRole = (typeof TEAM_ROLES)[number];
 export type TeamInvite = { email: string; fullName: string; role: TeamRole; redirectTo?: string };
 

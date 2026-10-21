@@ -1,5 +1,5 @@
 // Pure request check for platform-invite (unit-tested).
-export const ROLES = ['owner', 'manager', 'supervisor', 'worker', 'fitter'] as const;
+export const ROLES = ['owner', 'manager', 'supervisor', 'worker', 'fitter', 'viewer'] as const;
 export type Role = (typeof ROLES)[number];
 export type InviteRequest = { tenantId: string; email: string; fullName: string; role: Role; redirectTo?: string };
 

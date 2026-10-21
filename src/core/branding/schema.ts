@@ -3,11 +3,11 @@
 import { z } from 'zod';
 import type { AppRole } from '@/core/auth/claims';
 
-export const BRAND_ROLES = ['owner', 'manager', 'supervisor', 'worker', 'fitter'] as const;
+export const BRAND_ROLES = ['owner', 'manager', 'supervisor', 'worker', 'fitter', 'viewer'] as const;
 export type BrandRole = (typeof BRAND_ROLES)[number];
 
 export const DEFAULT_ROLE_LABELS: Record<BrandRole, string> = {
-  owner: 'Owner', manager: 'Manager', supervisor: 'Supervisor', worker: 'Worker', fitter: 'Fitter',
+  owner: 'Owner', manager: 'Manager', supervisor: 'Supervisor', worker: 'Worker', fitter: 'Fitter', viewer: 'View only',
 };
 
 export const MIN_CONTRAST = 4.5;

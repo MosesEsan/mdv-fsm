@@ -11,6 +11,7 @@ Rules that always apply:
 - Multi-tenant: every table has `tenant_id` and RLS. Schema changes only through new migrations in `supabase/migrations`, each with policies, indexes and pgTAP tests.
 - Core never names a module; modules plug in through the registries in `src/core/modules` and `src/core/jobs/sections.ts`.
 - Field roles never see prices (enforced by RLS).
+- The `viewer` role is read only: every new business table needs the `zz_block_viewer_writes` trigger (see `20261021110000_core_viewer_role.sql`); `core_viewer_role.test.sql` fails until it has one.
 - Never commit env files or keys. Never run seed scripts against production. Production Supabase deploys need explicit approval and `--yes-prod`.
 - Before committing: typecheck, `npm test`, database tests. Conventional Commits.
 - Keep `docs/BUILD-LOG.md`, `docs/HANDOVER.md` and the flows board (`design/flows-board/`) in step with the code.

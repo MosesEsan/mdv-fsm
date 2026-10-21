@@ -1,5 +1,5 @@
 // Pure rules for the Team screen (unit-tested). The database checks the same things.
-export const TEAM_ROLES = ['manager', 'supervisor', 'worker', 'fitter'] as const;
+export const TEAM_ROLES = ['manager', 'supervisor', 'worker', 'fitter', 'viewer'] as const;
 export type TeamRole = (typeof TEAM_ROLES)[number];
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -8,7 +8,8 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function teamRoleOptions(isFeatureEnabled: (feature: string) => boolean): TeamRole[] {
   return TEAM_ROLES.filter((r) => r === 'manager' || r === 'worker'
     || (r === 'supervisor' && isFeatureEnabled('timesheets'))
-    || (r === 'fitter' && isFeatureEnabled('flooring')));
+    || (r === 'fitter' && isFeatureEnabled('flooring'))
+    || (r === 'viewer' && isFeatureEnabled('timesheets')));
 }
 
 export function inviteProblems(v: { name: string; email: string; role: string | null }): string[] {

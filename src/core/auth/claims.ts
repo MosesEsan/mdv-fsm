@@ -11,6 +11,8 @@ export type AuthClaims = {
 
 export const isOwnerRole = (role: AppRole | undefined): boolean => role === 'owner';
 export const isManagerRole = (role: AppRole | undefined): boolean => role === 'owner' || role === 'manager';
+/** Read-only office/accounts role: sees and exports, never changes anything (enforced by the database). */
+export const isViewerRole = (role: AppRole | undefined): boolean => role === 'viewer';
 export const isSupervisorRole = (role: AppRole | undefined): boolean => role === 'supervisor';
 
 /** Expo may deserialize a null `extra` value as an object; only a non-empty string locks a build. */
