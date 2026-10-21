@@ -1,6 +1,6 @@
 -- Read-only "viewer" role (Accounts Administrator).
 begin;
-select plan(14);
+select plan(17);
 
 insert into auth.users (id, email) values
   ('e0000000-0000-0000-0000-000000000001', 'owner-e@test.local'),
@@ -45,6 +45,21 @@ select throws_ok($$ select public.ts_clock_in() $$, null, null, 'viewer can''t c
 reset role;
 
 select is((select notes from public.ts_entries), 'Fixed light', 'the visit is unchanged');
+
+select ok(
+  (select prosecdef from pg_proc where oid = 'private.block_viewer_writes()'::regprocedure),
+  'viewer write guard can inspect private claims for service-role writes'
+);
+
+select ok(
+  has_schema_privilege('service_role', 'private', 'USAGE'),
+  'service role can run private trigger helpers'
+);
+
+select ok(
+  has_function_privilege('service_role', 'private.ts_ensure_week(uuid,uuid,date)', 'EXECUTE'),
+  'service role can execute private trigger dependencies'
+);
 
 -- Every business table has the write block (new tables must get one too).
 select is_empty($$
