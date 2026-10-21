@@ -15,6 +15,7 @@ const FULL_DEFAULTS = {
   roundingMinutes: 15,
   overtimeDailyAfterMinutes: null,
   overtimeWeeklyAfterMinutes: 2340,
+  materials: 'off',
 };
 
 /** Defaults from the latest migration that defines private.settings_defaults__timesheets(). */
@@ -66,5 +67,15 @@ describe('timesheets settings schema', () => {
         expect(timesheetsSettingsSchema.parse({ [key]: raw })[key as keyof typeof FULL_DEFAULTS]).toBe(raw);
       }
     }
+  });
+
+  it('accepts customer logging and optional materials (visit-style businesses)', () => {
+    const s = timesheetsSettingsSchema.parse({ logAgainst: 'customer', materials: 'optional', approval: 'none' });
+    expect(s.logAgainst).toBe('customer');
+    expect(s.materials).toBe('optional');
+  });
+
+  it('falls back for an unknown materials value', () => {
+    expect(timesheetsSettingsSchema.parse({ materials: 'priced' }).materials).toBe('off');
   });
 });

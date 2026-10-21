@@ -16,13 +16,14 @@ export const timesheetsSettingsSchema = z.object({
   breaks: withDefault(z.enum(['off', 'fixed', 'manual']), 'off'),
   fixedBreakMinutes: withDefault(z.number().int().min(0).max(120), 30),
   approval: withDefault(z.enum(['none', 'manager', 'supervisor']), 'manager'),
-  logAgainst: withDefault(z.enum(['job', 'none']), 'job'),
+  logAgainst: withDefault(z.enum(['job', 'customer', 'none']), 'job'),
   requireJob: withDefault(z.boolean(), false),
   costCodes: withDefault(z.boolean(), false),
   weekStartsOn: withDefault(z.enum(WEEK_DAYS), 'monday'),
   roundingMinutes: withDefault(z.literal(ROUNDING_STEPS), 15),
   overtimeDailyAfterMinutes: withDefault(z.number().int().min(1).max(1440).nullable(), null),
   overtimeWeeklyAfterMinutes: withDefault(z.number().int().min(1).max(10080).nullable(), 2340),
+  materials: withDefault(z.enum(['off', 'optional']), 'off'),
 });
 
 export type TimesheetsSettings = z.output<typeof timesheetsSettingsSchema>;
@@ -68,10 +69,11 @@ export const timesheetsSettingsFields: SettingsFields<TimesheetsSettings> = {
   },
   logAgainst: {
     kind: 'choice',
-    label: 'Link hours to jobs',
+    label: 'Link hours to',
     options: [
-      { value: 'job', label: 'Yes, pick a job' },
-      { value: 'none', label: 'No' },
+      { value: 'job', label: 'A job', description: 'Staff pick the job they worked on.' },
+      { value: 'customer', label: 'A customer', description: 'Staff pick the customer they visited. No jobs needed.' },
+      { value: 'none', label: 'Nothing' },
     ],
   },
   requireJob: {
@@ -79,6 +81,15 @@ export const timesheetsSettingsFields: SettingsFields<TimesheetsSettings> = {
     label: 'A job must be picked',
     description: 'When off, staff can save hours without a job (e.g. travel or yard time).',
     showIf: (s) => s.logAgainst === 'job',
+  },
+  materials: {
+    kind: 'choice',
+    label: 'Materials used',
+    description: 'Staff can note the materials used on each visit. No prices are recorded.',
+    options: [
+      { value: 'off', label: 'Not recorded' },
+      { value: 'optional', label: 'Staff can add them' },
+    ],
   },
   costCodes: {
     kind: 'toggle',
