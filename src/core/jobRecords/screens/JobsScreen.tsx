@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Image, Text, TextInput, View } from 'react-native';
+import { useTabs } from '@/core/modules/TabBar';
 import { useRouter } from 'expo-router';
 import { useSession } from '@/core/auth/AuthProvider';
 import { useBranding } from '@/core/branding';
@@ -83,12 +84,13 @@ function JobsBar({ canAdd, onNew, query, onQuery }: { canAdd: boolean; onNew: ()
   const brand = useBranding();
   const { session } = useSession();
   const router = useRouter();
+  const isTab = useTabs().length > 1; // a tab's first screen: no back arrow
   const person = typeof session?.user.user_metadata?.full_name === 'string' ? session.user.user_metadata.full_name : null;
   return (
     <AppBar
       title="Jobs"
       sub={[brand.name, person].filter(Boolean).join(' · ')}
-      onBack={router.canGoBack() ? () => router.back() : undefined}
+      onBack={!isTab && router.canGoBack() ? () => router.back() : undefined}
       lead={(
         <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginLeft: 4, marginRight: 6 }}>
           {brand.logoUrl ? <Image source={{ uri: brand.logoUrl }} style={{ width: 40, height: 40 }} resizeMode="contain" accessibilityLabel="Logo" />

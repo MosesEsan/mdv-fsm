@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View } from 'react-native';
+import { useTabs } from '@/core/modules/TabBar';
 import { useRouter } from 'expo-router';
 import { firstName, useJobContext, whenLabel } from '@/core/jobRecords';
 import { Chip, Screen, colors, styles } from '@/core/ui';
@@ -10,6 +11,7 @@ import { useExtraEntries, useExtraWorkLive } from '../hooks';
 export function ExtraWorkListScreen({ onOpen }: { onOpen: (entryId: string) => void }) {
   useExtraWorkLive();
   const router = useRouter();
+  const isTab = useTabs().length > 1; // a tab's first screen: no back arrow
   const { tz, today } = useJobContext();
   const [f, setF] = useState<'open' | 'done'>('open');
   const entries = useExtraEntries('all');
@@ -17,7 +19,7 @@ export function ExtraWorkListScreen({ onOpen }: { onOpen: (entryId: string) => v
   const list = all.filter((x) => (f === 'open' ? !x.invoicedAt : !!x.invoicedAt));
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <AppBar title="Extra work" sub="All jobs" onBack={router.canGoBack() ? () => router.back() : undefined} />
+      <AppBar title="Extra work" sub="All jobs" onBack={!isTab && router.canGoBack() ? () => router.back() : undefined} />
       <Screen>
         {entries.isLoading ? <LoadingCards /> : null}
         {entries.error && !entries.data ? <LoadFailed what="extra work" onRetry={() => void entries.refetch()} /> : null}
