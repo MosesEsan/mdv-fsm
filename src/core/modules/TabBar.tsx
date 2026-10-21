@@ -1,11 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { usePathname, useRouter, type Href } from 'expo-router';
+import type { BottomTabBarProps } from 'expo-router/tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, useTheme } from '@/core/ui';
 import type { NavItem } from './registry';
+import { tabRouteName } from './tabs';
 import { useModuleNav } from './useModuleNav';
-import { activeTab } from './tabs';
 
 const SETTINGS_TAB: NavItem = { path: '/settings', title: 'Settings', roles: 'all', icon: 'settings-outline' };
 
@@ -20,31 +20,40 @@ export function useTabs(): NavItem[] {
 }
 
 /**
- * The one bottom tab bar, rendered by app/(app)/_layout.tsx under the screens, so it stays put while
- * tabs switch (no slide, no re-mount). Shown only on a tab's first screen; nothing for businesses without tabs.
+ * The bar for Expo Router's <Tabs> (app/(app)/(tabs)/_layout.tsx): our look, the business's tabs in menu
+ * order, and counts. Nothing for businesses without tabs.
  */
-export function TabBar() {
+export function BrandTabBar({ state, navigation }: BottomTabBarProps) {
   const tabs = useTabs();
   const insets = useSafeAreaInsets();
-  const pathname = usePathname();
-  const current = activeTab(tabs, pathname);
-  if (tabs.length < 2 || !current) return null;
+  if (tabs.length < 2) return null;
+  const current = state.routes[state.index]?.name;
   return (
     <View accessibilityRole="tablist" style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, paddingBottom: insets.bottom }}>
-      {tabs.map((t) => <Tab key={t.path} item={t} active={t.path === current.path} />)}
+      {tabs.map((t) => {
+        const name = tabRouteName(t.path);
+        const route = state.routes.find((r) => r.name === name);
+        const active = current === name;
+        return (
+          <Tab key={t.path} item={t} active={active} onPress={() => {
+            if (!route) return;
+            const e = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            if (!active && !e.defaultPrevented) navigation.navigate(name);
+          }} />
+        );
+      })}
     </View>
   );
 }
 
-function Tab({ item, active }: { item: NavItem; active: boolean }) {
-  const router = useRouter();
+function Tab({ item, active, onPress }: { item: NavItem; active: boolean; onPress: () => void }) {
   const theme = useTheme();
   const count = item.useCount ? item.useCount() : undefined;
   const color = active ? theme.primary : colors.muted;
   const icon = (active ? (item.icon ?? 'apps-outline').replace('-outline', '') : item.icon ?? 'apps-outline') as keyof typeof Ionicons.glyphMap;
   return (
     <Pressable accessibilityRole="tab" accessibilityState={{ selected: active }} accessibilityLabel={count ? `${item.title}, ${count}` : item.title}
-      onPress={() => { if (!active) router.replace(item.path as Href); }}
+      onPress={onPress}
       style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 8, paddingBottom: 6, minHeight: 56 }}>
       <View>
         <Ionicons name={icon} size={24} color={color} />

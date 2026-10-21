@@ -62,7 +62,7 @@ function Guard() {
       ? <Redirect href="/admin" />
       : <Message text="Your account isn't set up yet. Ask the owner." onSignOut={signOut} />;
   }
-  if (area === '(auth)') return <Redirect href="/(app)" />;
+  if (area === '(auth)') return <Redirect href="/" />;
   return stack;
 }
 

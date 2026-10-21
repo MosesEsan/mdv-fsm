@@ -3,5 +3,5 @@ import { VisitFormScreen } from '@/modules/timesheets/routes';
 
 export default function NewVisitRoute() {
   const router = useRouter();
-  return <VisitFormScreen onBack={() => router.back()} onSaved={(id) => router.replace({ pathname: '/timesheets/visits/[id]', params: { id, saved: '1' } })} />;
+  return <VisitFormScreen onBack={() => router.back()} onSaved={(id) => router.replace({ pathname: '/visit/[id]', params: { id, saved: '1' } })} />;
 }

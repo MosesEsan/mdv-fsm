@@ -29,9 +29,9 @@ registerModule({
       when: (s) => weekly(s) && ts(s)?.approval !== 'none' },
     { path: '/timesheets/reports', title: 'Hours & export', description: 'Totals and files for payroll', roles: ['owner', 'manager'], order: 6, icon: 'document-text-outline', when: weekly },
     // Customer visits. Each is a "start here" screen, so the app opens on the first one the person can see, with tabs.
-    { path: '/timesheets/visits', title: 'Today', description: 'Log a visit', roles: ['owner', 'manager', 'supervisor', 'worker', 'fitter'], order: 1, icon: 'today-outline', when: visits, startHere: true, tab: true },
-    { path: '/timesheets/visits/entries', title: 'Entries', description: 'Every visit, by month', roles: ['owner', 'manager', 'supervisor', 'worker', 'fitter', 'viewer'], order: 2, icon: 'list-outline', when: visits, startHere: true, tab: true },
-    { path: '/timesheets/visits/report', title: 'Report', description: 'Monthly report per customer', roles: ['owner', 'manager', 'viewer'], order: 3, icon: 'document-text-outline', when: visits, startHere: true, tab: true },
+    { path: '/visits', title: 'Today', description: 'Log a visit', roles: ['owner', 'manager', 'supervisor', 'worker', 'fitter'], order: 1, icon: 'today-outline', when: visits, startHere: true, tab: true },
+    { path: '/visit-entries', title: 'Entries', description: 'Every visit, by month', roles: ['owner', 'manager', 'supervisor', 'worker', 'fitter', 'viewer'], order: 2, icon: 'list-outline', when: visits, startHere: true, tab: true },
+    { path: '/visit-report', title: 'Report', description: 'Monthly report per customer', roles: ['owner', 'manager', 'viewer'], order: 3, icon: 'document-text-outline', when: visits, startHere: true, tab: true },
   ],
 });
 

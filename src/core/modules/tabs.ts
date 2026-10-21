@@ -1,8 +1,5 @@
-import type { NavItem } from './registry';
-
-/** The tab whose first screen is showing, if any (exact match: deeper screens like a job page have no tab bar). */
-export function activeTab(tabs: NavItem[], pathname: string): NavItem | undefined {
-  const clean = pathname.replace(/\/+$/, '') || '/';
-  return tabs.find((t) => t.path === clean);
+// Tab menu entries must be top-level routes in app/(app)/(tabs): '/jobs' → route 'jobs', '/' → 'index'.
+export function tabRouteName(path: string): string {
+  const clean = path.replace(/^\/+|\/+$/g, '');
+  return clean === '' ? 'index' : clean;
 }
-
