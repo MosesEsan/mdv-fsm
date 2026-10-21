@@ -98,6 +98,11 @@ design/flows-board/          the interactive flows board (source + build)
 5. Update the flows board to AG and add "Edit details".
 6. Deploy the hosted dev project and point the app at it (section 3).
 
+**To do (agreed 2026-10-21):**
+- [ ] Offline updates: decide, then queue the whole update (text and photos) to send when signal returns, or leave it out of the demo.
+- [ ] Flows board: AG name, bottom tabs, Customers, Team, Settings, Edit details, "Add to invoice"; republish.
+- [ ] Push notifications (core): store push tokens, send from an Edge Function on job assigned, new update and extra work; per-person settings; needs a test build.
+
 **Documents (Claude Docs):** "AG Property Maintenance — Job App Proposal and Trial" (client-facing: demo script, 4-week free trial, proposed €149 + VAT/month up to 6 users, questions) and "AG Property Maintenance — Internal Delivery Plan" (status, trial setup, cost list, pricing, risks). Hourly rate and support hours in the cost list are placeholders.
 
 ## 7. Open questions (all clients)
