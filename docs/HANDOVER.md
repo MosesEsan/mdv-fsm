@@ -19,9 +19,9 @@ One multi-tenant field-service / job-management app (Expo React Native + Supabas
 | **AG Property Maintenance** | Arnis Gelsons (owner). Property maintenance and bathroom renovations, ~5 people | **Main focus.** Demo being prepared | `job_records` (core), `extra_work` | Replaces a WhatsApp group. Wants a monthly price, no big upfront cost. We already maintain his website. Demo as *our product*, then ask what's missing |
 | **Artisan Flooring** | Milen. Floor fitting, sanding, restoration | Stage 1 built (enquiries, viewings, quotes, schedule, job sheet) | `flooring`, `scheduling` | Requirements still being gathered for a proposal. Seeded as "Demo Flooring" |
 | **Gildoc** | Irish construction company (Liam Doherty, Emer, Fiona) | Discovery | Likely `timesheets`, site reports, documents | Requirements not confirmed |
-| **MDC Electrical** | Martin | Discovery done; V1 queued next after AG | Simple timesheets | Timesheets module exists; check fit before building anything new |
+| **MDC Electrical** | Martin | V1 being built (see BUILD-LOG) | `timesheets` set up for customer visits | Visits per customer, materials, monthly customer report; read-only accounts role. Docs: proposal and internal plan |
 
-Seeded demo businesses: `00000000-0000-0000-0000-000000000001` Demo Flooring, `...0002` construction (timesheets), `...0003` **AG Property Maintenance**.
+Seeded demo businesses: `00000000-0000-0000-0000-000000000001` Demo Flooring, `...0002` construction (timesheets), `...0003` **AG Property Maintenance**, `...0004` **MDC Electrical (demo)** (`owner@mdc.test`, `jack@mdc.test`, `accounts@mdc.test`).
 
 ## 3. Stack and environments
 
@@ -52,8 +52,8 @@ src/modules/
   extraWork/, flooring/, timesheets/   each with register.ts, api, hooks, rules, screens, home.ts
 supabase/migrations/         schema (never edit by hand in the dashboard)
 supabase/tests/              pgTAP (229 checks)
-supabase/seed.sql            demo businesses, customers, jobs (local/dev only)
-scripts/seed-users.ts        demo logins, assignments, updates, extra work, 23 demo photos, AG logo
+supabase/seeds/              one SQL seed per demo business (local/dev only): 00 flooring+construction, 10 AG, 20 MDC
+scripts/seed-users.ts        runs scripts/seed/{demo,ag,mdc}.ts: logins and data needing them (npm run seed:users -- ag|mdc|demo)
 scripts/demo-photos/         labelled placeholder photos (swap for real ones, same names)
 scripts/demo-branding/       AG logo
 scripts/db-harness/          run pgTAP without Docker (Postgres 16 + pgTAP + stub.sql)

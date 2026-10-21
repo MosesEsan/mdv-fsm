@@ -184,3 +184,8 @@ Invite emails: http://localhost:54324.
 - `ts_save_visit(p_entry, p_materials)` saves a visit and its materials together (runs as the caller, so RLS applies).
 - Tests: `timesheets_visits.test.sql` (30); database total 273, all passing. Unit tests `visit.test.ts`, settings test updated.
 - Waiting: OK on the Accounts Administrator role (step 3.4) before the report, screens and seed.
+
+## 2026-10-21 — Seeds split per business
+- `supabase/seed.sql` → `supabase/seeds/00_demo-flooring-construction.sql`, `10_ag-property.sql`, `20_mdc-electrical.sql` (`config.toml` `[db.seed] sql_paths`).
+- `scripts/seed-users.ts` now runs `scripts/seed/{demo,ag,mdc}.ts`; pick one with `npm run seed:users -- ag` (or `mdc`, `demo`). Shared helpers in `scripts/seed/shared.ts`, which refuses non-local URLs unless `SEED_ALLOW_HOSTED_DEV=1`.
+- MDC demo: Martin (owner), Jack (apprentice), Michael (accounts, placeholder name, `viewer` role, which lands in the next step), 4 customers, 9 October visits with materials, as on the flows board.

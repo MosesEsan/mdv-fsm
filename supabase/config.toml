@@ -8,3 +8,8 @@ additional_redirect_urls = ["http://localhost:8081/set-password"]
 [auth.hook.custom_access_token]
 enabled = true
 uri = "pg-functions://postgres/public/custom_access_token_hook"
+
+[db.seed]
+# One seed file per demo business (local/dev only; never production).
+enabled = true
+sql_paths = ["./seeds/*.sql"]
