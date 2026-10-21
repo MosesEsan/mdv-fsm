@@ -1,6 +1,5 @@
 import { Text, View } from 'react-native';
 import { addDays, formatDay, weekStartFor } from '@/core/dates';
-import { TabBar } from '@/core/modules/TabBar';
 import { Button, Card, Screen, colors, styles } from '@/core/ui';
 import { AppBar, EmptyBox, ListRow, LoadFailed, LoadingCards, SectionLabel } from '@/core/ui/kit';
 import { useVisitCustomers, useVisitPeople, useVisits } from '../api';
@@ -44,7 +43,6 @@ export function VisitsTodayScreen({ onLog, onOpen }: Props) {
           </>
         ) : null}
       </Screen>
-      <TabBar />
     </View>
   );
 }

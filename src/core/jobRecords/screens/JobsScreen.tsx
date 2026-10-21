@@ -5,7 +5,6 @@ import { useSession } from '@/core/auth/AuthProvider';
 import { useBranding } from '@/core/branding';
 import { brandInitials } from '@/core/branding/BrandMark';
 import { jobListAddons, type JobRowTag } from '@/core/jobs/sections';
-import { TabBar } from '@/core/modules/TabBar';
 import { useTenantSettings } from '@/core/settings/useTenantSettings';
 import { Button, Chip, Screen, colors, styles, useTheme } from '@/core/ui';
 import { AppBar, EmptyBox, ListRow, LoadFailed, LoadingCards, Pill, type PillTone } from '@/core/ui/kit';
@@ -74,7 +73,6 @@ export function JobsScreen({ onOpen, onNew }: Props) {
           </>
         ) : null}
       </Screen>
-      <TabBar />
     </View>
   );
 }

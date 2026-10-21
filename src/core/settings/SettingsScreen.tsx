@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { isOwnerRole } from '@/core/auth/claims';
 import { useSession } from '@/core/auth/AuthProvider';
 import { useBranding } from '@/core/branding';
-import { TabBar, useTabs } from '@/core/modules/TabBar';
+import { useTabs } from '@/core/modules/TabBar';
 import { Button, Card, ErrorText, Screen, colors, styles } from '@/core/ui';
 import { AppBar, ListRow, LoadingCards, SectionLabel } from '@/core/ui/kit';
 import { ModuleSettingsSection } from './components/ModuleSettingsSection';
@@ -61,7 +61,6 @@ export function SettingsScreen() {
         <Button title="Sign out" icon="log-out-outline" variant="secondary" onPress={signOut} />
         <Text style={[styles.hint, { textAlign: 'center' }]}>{`Version ${Constants.expoConfig?.version ?? '–'}`}</Text>
       </Screen>
-      <TabBar />
     </View>
   );
 }

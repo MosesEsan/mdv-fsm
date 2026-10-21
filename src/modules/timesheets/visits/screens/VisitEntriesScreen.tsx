@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { formatDay } from '@/core/dates';
-import { TabBar } from '@/core/modules/TabBar';
 import { Chip, Screen, colors, styles } from '@/core/ui';
 import { AppBar, EmptyBox, ListRow, LoadFailed, LoadingCards, Pill } from '@/core/ui/kit';
 import { useVisitCustomers, useVisitPeople, useVisits } from '../api';
@@ -60,7 +59,6 @@ export function VisitEntriesScreen({ onOpen }: Props) {
           </ListRow>
         ))}
       </Screen>
-      <TabBar />
     </View>
   );
 }

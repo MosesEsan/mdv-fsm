@@ -3,7 +3,6 @@ import { Platform, Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { openStoredFile } from '@/core/files/storage';
 import { formatDay } from '@/core/dates';
-import { TabBar } from '@/core/modules/TabBar';
 import { Button, Card, Chip, Notice, Screen, colors, styles } from '@/core/ui';
 import { AppBar, EmptyBox, LoadFailed, LoadingCards, SectionLabel } from '@/core/ui/kit';
 import { formatQuantity, materialTotals } from '../../schemas/visit';
@@ -96,7 +95,6 @@ export function CustomerReportScreen({ initialCustomer, initialMonth, onOpen }: 
           </>
         ) : null}
       </Screen>
-      <TabBar />
     </View>
   );
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { TabBar } from '@/core/modules/TabBar';
 import { Screen, colors, styles } from '@/core/ui';
 import { AppBar, EmptyBox, ListRow, LoadFailed, LoadingCards } from '@/core/ui/kit';
 import { useCustomerList } from '../hooks';
@@ -34,7 +33,6 @@ export function CustomersScreen({ onOpen }: { onOpen: (customerId: string) => vo
         ))}
         {rows.length === 500 ? <Text style={styles.hint}>Showing the first 500. Search to find others.</Text> : null}
       </Screen>
-      <TabBar />
     </View>
   );
 }

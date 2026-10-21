@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, useTheme } from '@/core/ui';
 import type { NavItem } from './registry';
 import { useModuleNav } from './useModuleNav';
+import { activeTab } from './tabs';
 
 const SETTINGS_TAB: NavItem = { path: '/settings', title: 'Settings', roles: 'all', icon: 'settings-outline' };
 
@@ -18,15 +19,19 @@ export function useTabs(): NavItem[] {
   return [...items.filter((i) => i.tab), SETTINGS_TAB];
 }
 
-/** Rendered at the bottom of each tab's first screen. Nothing when the business has no tabs. */
+/**
+ * The one bottom tab bar, rendered by app/(app)/_layout.tsx under the screens, so it stays put while
+ * tabs switch (no slide, no re-mount). Shown only on a tab's first screen; nothing for businesses without tabs.
+ */
 export function TabBar() {
   const tabs = useTabs();
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
-  if (tabs.length < 2) return null;
+  const current = activeTab(tabs, pathname);
+  if (tabs.length < 2 || !current) return null;
   return (
     <View accessibilityRole="tablist" style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, paddingBottom: insets.bottom }}>
-      {tabs.map((t) => <Tab key={t.path} item={t} active={pathname === t.path || pathname.startsWith(`${t.path}/`)} />)}
+      {tabs.map((t) => <Tab key={t.path} item={t} active={t.path === current.path} />)}
     </View>
   );
 }
