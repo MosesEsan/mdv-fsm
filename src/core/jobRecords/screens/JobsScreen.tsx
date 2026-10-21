@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Image, Text, TextInput, View } from 'react-native';
-import { useRouter, type Href } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSession } from '@/core/auth/AuthProvider';
 import { useBranding } from '@/core/branding';
 import { brandInitials } from '@/core/branding/BrandMark';
 import { jobListAddons, type JobRowTag } from '@/core/jobs/sections';
-import { useModuleNav } from '@/core/modules/useModuleNav';
+import { TabBar } from '@/core/modules/TabBar';
 import { useTenantSettings } from '@/core/settings/useTenantSettings';
 import { Button, Chip, Screen, colors, styles, useTheme } from '@/core/ui';
 import { AppBar, EmptyBox, ListRow, LoadFailed, LoadingCards, Pill, type PillTone } from '@/core/ui/kit';
@@ -18,11 +18,10 @@ const TAG_TONE: Record<JobRowTag['tone'], PillTone> = { danger: 'red', warning: 
 
 /**
  * Every job the person can see (flows board: Jobs list). Search, Active / Completed with counts,
- * "New job" for the owner and manager. When it's the first screen of the app, it also offers the rest of the menu.
+ * "New job" for the owner and manager. Bottom tabs lead to the rest of the app.
  */
 export function JobsScreen({ onOpen, onNew }: Props) {
   useJobRecordsLive();
-  const router = useRouter();
   const { tz, today, isManager } = useJobContext();
   const { isFeatureEnabled } = useTenantSettings();
   const [filter, setFilter] = useState<'active' | 'completed'>('active');
@@ -39,7 +38,6 @@ export function JobsScreen({ onOpen, onNew }: Props) {
   const all = list.data ?? [];
   const counts = { active: all.filter((j) => j.status !== 'completed' && j.status !== 'cancelled').length, completed: all.filter((j) => j.status === 'completed').length };
   const rows = q ? all : all.filter((j) => (filter === 'completed' ? j.status === 'completed' : j.status !== 'completed' && j.status !== 'cancelled'));
-  const isHome = !router.canGoBack();
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -75,8 +73,8 @@ export function JobsScreen({ onOpen, onNew }: Props) {
             })}
           </>
         ) : null}
-        {isHome ? <MoreMenu /> : null}
       </Screen>
+      <TabBar />
     </View>
   );
 }
@@ -106,21 +104,5 @@ function JobsBar({ canAdd, onNew, query, onQuery }: { canAdd: boolean; onNew: ()
           style={[styles.input, { borderColor: 'transparent' }]} />
       )}
     />
-  );
-}
-
-/** When Jobs is the first screen: the rest of the menu, Settings and Sign out. */
-function MoreMenu() {
-  const router = useRouter();
-  const { isPlatformAdmin, signOut } = useSession();
-  const { items } = useModuleNav();
-  const others = items.filter((i) => i.path !== '/jobs');
-  return (
-    <View style={{ gap: 10, marginTop: 16 }}>
-      {others.map((i) => <ListRow key={i.path} title={i.title} lines={[i.description]} onPress={() => router.push(i.path as Href)} />)}
-      {isPlatformAdmin ? <ListRow title="Platform admin" lines={['Businesses, branding and invites']} onPress={() => router.push('/admin')} /> : null}
-      <ListRow title="Settings" lines={['How each feature works for you']} onPress={() => router.push('/settings')} />
-      <Button title="Sign out" variant="secondary" onPress={signOut} />
-    </View>
   );
 }

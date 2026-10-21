@@ -57,7 +57,7 @@ export function ExtraWorkEntryScreen({ entryId, onOpenJob, onDeleted }: Props) {
             </>
           ) : (
             <>
-              <Button title="Added to invoice" icon="checkmark" variant="ok" size="lg" busy={invoiced.isPending} onPress={() => invoiced.mutate({ id: e.id, invoiced: true })} />
+              <Button title="Add to invoice" icon="checkmark" variant="ok" size="lg" busy={invoiced.isPending} onPress={() => invoiced.mutate({ id: e.id, invoiced: true })} />
               <Text style={[styles.hint, { textAlign: 'center' }]}>Tick this once it’s on the customer’s invoice in your invoicing software.</Text>
             </>
           )

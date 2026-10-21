@@ -83,7 +83,7 @@ export function JobEditScreen({ jobId, onSaved }: Props) {
           <Card style={{ gap: 12 }}>
             <SectionLabel>Customer</SectionLabel>
             <TextField label="Find a past customer" value={find} onChange={setFind} placeholder="Name or street" autoCapitalize="none" />
-            {(search.data ?? []).slice(0, 5).map((c) => <ListRow key={c.id} title={c.name} lines={[c.address]} onPress={() => pick(c)} />)}
+            {find.trim().length >= 2 && (search.data ?? []).slice(0, 5).map((c) => <ListRow key={c.id} title={c.name} lines={[c.address]} onPress={() => pick(c)} />)}
             <TextField label="Name" value={f.name} onChange={set('name')} autoCapitalize="words" error={tried && !f.name.trim() ? 'Add the customer’s name.' : null} />
             <TextField label="Phone" value={f.phone} onChange={set('phone')} keyboardType="phone-pad" />
             <TextField label="Address" value={f.address} onChange={set('address')} autoCapitalize="words" error={tried && !f.address.trim() ? 'Add the address.' : null} />

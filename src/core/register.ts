@@ -2,3 +2,4 @@
 // Import once at app start, next to '@/modules'.
 import './scheduling/register';
 import './jobRecords/register';
+import './customers/register';

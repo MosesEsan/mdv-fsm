@@ -162,3 +162,10 @@ Invite emails: http://localhost:54324.
 - Flows board sources moved into the repo (`design/flows-board/`), with job records merged into the main board.
 - `docs/HANDOVER.md` and `CLAUDE.md` for new sessions; `scripts/db-harness/` runs database tests without Docker.
 - Not yet run on a phone; hosted dev Supabase not yet deployed.
+
+### 2026-10-21 — Tabs, Customers, Settings
+- Bottom tabs for businesses that open on the jobs list (`src/core/modules/TabBar.tsx`, menu entries marked `tab`): Jobs, Customers, Extra work (with count), Settings. Workers see Jobs and Settings. Replaces the menu at the bottom of the jobs list. Flooring keeps Home tiles.
+- Customers (core, shown with job records): searchable list (up to 500, search narrows) and a customer page with Call, Maps, Email and all their jobs.
+- Settings: coloured bar, your name, role and business, feature settings for owners, Sign out, app version.
+- "Add to invoice" button (status stays "Added to invoice"). New job no longer lists customers before you type 2 letters.
+- Flows board not yet updated for tabs, Customers or the new wording.

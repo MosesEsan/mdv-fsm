@@ -16,7 +16,7 @@ registerModule({
   id: EXTRA_WORK,
   feature: EXTRA_WORK,
   title: 'Extra work',
-  nav: [{ path: '/extra-work', title: 'Extra work', description: 'Extras logged on jobs, ready to invoice', roles: ['owner', 'manager'], order: 0.5, icon: 'flag-outline', useCount: useOpenExtraCount }],
+  nav: [{ path: '/extra-work', title: 'Extra work', description: 'Extras logged on jobs, ready to invoice', roles: ['owner', 'manager'], order: 0.5, icon: 'flag-outline', useCount: useOpenExtraCount, tab: true }],
 });
 
 registerJobSection({ id: EXTRA_WORK, feature: EXTRA_WORK, order: 20, Component: ExtraWorkSection });

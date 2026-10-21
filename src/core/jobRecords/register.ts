@@ -7,5 +7,5 @@ registerModule({
   id: JOB_RECORDS,
   feature: JOB_RECORDS,
   title: 'Jobs',
-  nav: [{ path: '/jobs', title: 'Jobs', description: 'Every job, its photos and updates', roles: 'all', order: 0, icon: 'clipboard-outline', startHere: true }],
+  nav: [{ path: '/jobs', title: 'Jobs', description: 'Every job, its photos and updates', roles: 'all', order: 0, icon: 'clipboard-outline', startHere: true, tab: true }],
 });

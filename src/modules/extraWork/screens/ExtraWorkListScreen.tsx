@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { firstName, useJobContext, whenLabel } from '@/core/jobRecords';
 import { Chip, Screen, colors, styles } from '@/core/ui';
+import { TabBar } from '@/core/modules/TabBar';
 import { AppBar, EmptyBox, ListRow, LoadFailed, LoadingCards } from '@/core/ui/kit';
 import { useExtraEntries, useExtraWorkLive } from '../hooks';
 
@@ -41,6 +42,7 @@ export function ExtraWorkListScreen({ onOpen }: { onOpen: (entryId: string) => v
           </>
         ) : null}
       </Screen>
+      <TabBar />
     </View>
   );
 }

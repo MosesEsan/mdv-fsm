@@ -20,6 +20,8 @@ export type NavItem = {
   useCount?: () => number | undefined;
   /** This entry is the business's main screen: the app opens on it instead of Home (e.g. the jobs list). */
   startHere?: boolean;
+  /** Show as a bottom tab when the business opens on a start-here screen (e.g. Jobs, Customers, Extra work). */
+  tab?: boolean;
 };
 
 export type ModuleDefinition = {
