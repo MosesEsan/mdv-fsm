@@ -2,7 +2,7 @@ import '@/core/register'; // core features with menus (e.g. scheduling)
 import '@/modules'; // registers modules (menus + settings) before anything renders
 import React from 'react';
 import { AppState, Button, Text, View } from 'react-native';
-import { Redirect, Stack, useSegments } from 'expo-router';
+import { Redirect, Stack, useSegments, type Href } from 'expo-router';
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { createAppSupabaseClient, setSupabaseClient } from '@/core/supabase';
@@ -46,7 +46,7 @@ function Message({ text, onSignOut }: { text: string; onSignOut: () => void }) {
 
 /** Sends each person to the right area: login, the app (business users) or /admin (platform team). */
 function Guard() {
-  const { session, claims, isPlatformAdmin, isLoading, authError, signOut } = useSession();
+  const { session, claims, isPlatformAdmin, isLoading, authError, isPasswordRecovery, signOut } = useSession();
   const segments = useSegments() as string[];
   if (isLoading) return null;
   const area = segments[0];
@@ -55,6 +55,10 @@ function Guard() {
 
   if (authError) return <Message text={authError} onSignOut={signOut} />;
   if (!session) return area === '(auth)' || isPublicRoute(segments) ? stack : <Redirect href="/(auth)/login" />;
+  if (isPasswordRecovery && !(area === '(auth)' && page === 'reset-password')) {
+    return <Redirect href={'/(auth)/reset-password' as Href} />;
+  }
+  if (area === '(auth)' && page === 'reset-password') return stack;
   if (area === '(auth)' && page === 'set-password') return stack; // invite links land here signed in
   if (area === 'admin') return isPlatformAdmin ? stack : <Redirect href="/(app)/(tabs)" />;
   if (!claims) {

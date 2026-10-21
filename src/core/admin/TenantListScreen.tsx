@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Pressable, Text } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
-import { useSession } from '@/core/auth/AuthProvider';
 import { isFeatureEnabled } from '@/core/features';
 import { getModules } from '@/core/modules/registry';
 import { Button, Card, ErrorText, Heading, Loading, Muted, Screen, styles } from '@/core/ui';
@@ -11,7 +10,6 @@ import { Field } from './Field';
 /** Every business on the platform, plus a form to add one. */
 export function TenantListScreen() {
   const router = useRouter();
-  const { signOut } = useSession();
   const tenants = useTenants();
   const create = useCreateTenant();
   const [name, setName] = useState('');
@@ -47,7 +45,6 @@ export function TenantListScreen() {
         <ErrorText error={create.error} />
         <Button title="Create business" onPress={onCreate} busy={create.isPending} disabled={name.trim().length === 0} />
       </Card>
-      <Button title="Sign out" variant="secondary" onPress={signOut} />
     </Screen>
   );
 }

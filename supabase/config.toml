@@ -3,7 +3,7 @@ project_id = "fsm-platform"
 [auth]
 # Local Expo web build. Invite emails link here, then the app opens /set-password.
 site_url = "http://localhost:8081"
-additional_redirect_urls = ["http://localhost:8081/set-password"]
+additional_redirect_urls = ["http://localhost:8081/set-password", "http://localhost:8081/reset-password"]
 
 [auth.hook.custom_access_token]
 enabled = true

@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import type { Session } from '@supabase/supabase-js';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 import { getSupabase } from '@/core/supabase';
 import { claimsFromAccessToken, isLockedTenantMismatch, platformAdminFromAccessToken, type AuthClaims } from './claims';
+import { authRedirectUrl, currentUrlIsPasswordRecovery } from './authRedirectUrl';
 
 type AuthValue = {
   session: Session | null;
@@ -11,14 +12,16 @@ type AuthValue = {
   isPlatformAdmin: boolean;
   isLoading: boolean;
   authError: string | null;
+  isPasswordRecovery: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
   setPassword: (password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthValue>({
-  session: null, claims: null, isPlatformAdmin: false, isLoading: true, authError: null,
-  signIn: async () => {}, setPassword: async () => {}, signOut: async () => {},
+  session: null, claims: null, isPlatformAdmin: false, isLoading: true, authError: null, isPasswordRecovery: false,
+  signIn: async () => {}, requestPasswordReset: async () => {}, setPassword: async () => {}, signOut: async () => {},
 });
 
 export function useSession() {
@@ -29,6 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isPasswordRecovery, setPasswordRecovery] = useState(currentUrlIsPasswordRecovery);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -36,7 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(data.session);
       setLoading(false);
     });
-    const { data } = supabase.auth.onAuthStateChange((_e, next) => {
+    const { data } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, next) => {
+      if (event === 'PASSWORD_RECOVERY') setPasswordRecovery(true);
       setSession(next);
       setLoading(false);
     });
@@ -62,19 +67,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isPlatformAdmin,
     isLoading,
     authError,
+    isPasswordRecovery,
     signIn: async (email, password) => {
       const { error } = await getSupabase().auth.signInWithPassword({ email, password });
       if (error) throw new Error('That email and password don’t match. Check them and try again.');
     },
+    requestPasswordReset: async (email) => {
+      const { error } = await getSupabase().auth.resetPasswordForEmail(email, {
+        redirectTo: authRedirectUrl('/reset-password'),
+      });
+      if (error) throw new Error('We could not send the reset email. Please wait a moment and try again.');
+    },
     setPassword: async (password) => {
       const { error } = await getSupabase().auth.updateUser({ password });
-      if (error) throw new Error('The password could not be saved. The link may have expired; ask for a new invite.');
+      if (error) throw new Error('The password could not be saved. The link may have expired; request a new email.');
       await getSupabase().auth.refreshSession(); // pick up tenant_id / app_role in the token
     },
     signOut: async () => {
       await getSupabase().auth.signOut();
+      setPasswordRecovery(false);
     },
-  }), [session, claims, isPlatformAdmin, isLoading, authError]);
+  }), [session, claims, isPlatformAdmin, isLoading, authError, isPasswordRecovery]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

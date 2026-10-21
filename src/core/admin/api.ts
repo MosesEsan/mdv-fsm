@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { callFunction } from '@/core/functions';
 import { getSupabase } from '@/core/supabase';
+import { authRedirectUrl } from '@/core/auth/authRedirectUrl';
 
 export type TenantSummary = {
   id: string; name: string; timezone: string; features: Record<string, unknown>; branding: Record<string, unknown>;
@@ -70,14 +71,8 @@ export const useSetModuleSettings = (id: string) =>
     rpc<unknown>('platform_set_module_settings', { p_tenant: id, p_namespace: v.namespace, p_value: v.value }));
 export const useInvitePerson = (tenantId: string) =>
   useTenantMutation(tenantId, (v: { email: string; fullName: string; role: string }) =>
-    callFunction('platform-invite', { tenantId, ...v, redirectTo: setPasswordUrl() }, 'The invite could not be sent. Please try again.'),
+    callFunction('platform-invite', { tenantId, ...v, redirectTo: authRedirectUrl('/set-password') }, 'The invite could not be sent. Please try again.'),
   [adminKeys.people(tenantId)]);
-
-/** The invite link opens this web app's set-password page (the admin runs on the same web build). */
-function setPasswordUrl(): string | undefined {
-  const origin = (globalThis as unknown as { location?: { origin?: string } }).location?.origin;
-  return origin ? `${origin}/set-password` : undefined;
-}
 export const useUpdatePerson = (tenantId: string) =>
   useTenantMutation(tenantId, (v: { userId: string; fullName: string; role: string; active: boolean }) =>
     rpc<unknown>('platform_update_member', { p_user: v.userId, p_full_name: v.fullName, p_role: v.role, p_active: v.active }),

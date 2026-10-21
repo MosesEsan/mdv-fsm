@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import Constants from 'expo-constants';
+import { useRouter, type Href } from 'expo-router';
 import { brandInitials } from '@/core/branding/BrandMark';
 import { Button, Card, Notice, Screen, TextField, colors, useTheme } from '@/core/ui';
 import { useSession } from './AuthProvider';
@@ -11,6 +12,7 @@ import { useSession } from './AuthProvider';
  */
 export function LoginScreen() {
   const { signIn } = useSession();
+  const router = useRouter();
   const theme = useTheme();
   const appName = Constants.expoConfig?.name ?? 'Field Service';
   const [email, setEmail] = useState('');
@@ -45,6 +47,7 @@ export function LoginScreen() {
         <TextField label="Password" value={password} onChange={setPassword} secure />
         {problem ? <Notice tone="bad" title={problem} /> : null}
         <Button title="Sign in" size="lg" busy={busy} onPress={() => void submit()} />
+        <Button title="Forgot your password?" variant="secondary" onPress={() => router.push('/(auth)/forgot-password' as Href)} />
       </Card>
       <Text style={{ fontSize: 14, color: colors.muted, textAlign: 'center', marginTop: 'auto' }}>
         New here? Your manager sends you an invite by email.

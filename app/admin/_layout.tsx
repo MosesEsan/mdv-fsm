@@ -1,6 +1,7 @@
 import { Platform, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { Muted, Screen } from '@/core/ui';
+import { AdminHeader } from '@/core/admin/components/AdminHeader';
 
 /** Platform admin (our team only; the root Guard checks the platform claim). Web build only. */
 export default function AdminLayout() {
@@ -9,6 +10,7 @@ export default function AdminLayout() {
   }
   return (
     <View style={{ flex: 1, width: '100%', maxWidth: 960, alignSelf: 'center' }}>
+      <AdminHeader />
       <Stack screenOptions={{ headerShown: false }} />
     </View>
   );
